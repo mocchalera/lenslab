@@ -1,6 +1,8 @@
 import { GoogleGenAI } from "@google/genai";
 
 type ImageProviderId = "gemini" | "openai";
+type ImageAspect = "auto" | "1024x1024" | "1536x1024" | "1024x1536";
+type ImageQuality = "auto" | "low" | "medium" | "high";
 
 type ImageProviderErrorCode =
   | "missing_api_key"
@@ -19,6 +21,8 @@ interface ImageProxyRequest {
   imageBase64: string;
   mimeType: string;
   model?: string;
+  aspect: ImageAspect;
+  quality: ImageQuality;
 }
 
 interface ImageUsage {
@@ -55,6 +59,9 @@ interface OpenAIImagesResponse {
 
 const OPENAI_MODEL = "gpt-image-2";
 const GEMINI_MODEL = "gemini-2.5-flash-image";
+const IMAGE_ASPECT_VALUES = ["auto", "1024x1024", "1536x1024", "1024x1536"] as const;
+const IMAGE_QUALITY_VALUES = ["auto", "low", "medium", "high"] as const;
+let didLogGeminiAspectQualityWarning = false;
 
 const sendJson = (res: any, status: number, payload: unknown) => {
   res.statusCode = status;
@@ -112,6 +119,25 @@ const badRequest = (
   message,
 });
 
+const parseEnumValue = <T extends readonly string[]>(
+  value: unknown,
+  allowedValues: T,
+  fallback: T[number],
+  fieldName: string,
+  provider: ImageProviderId | "unknown"
+): T[number] => {
+  if (value === undefined) return fallback;
+
+  if (typeof value !== "string" || !allowedValues.includes(value)) {
+    throw badRequest(
+      `${fieldName} must be one of: ${allowedValues.join(", ")}.`,
+      provider
+    );
+  }
+
+  return value as T[number];
+};
+
 const validateRequest = (body: unknown): ImageProxyRequest => {
   if (!body || typeof body !== "object") {
     throw badRequest("Request body must be a JSON object.");
@@ -140,6 +166,8 @@ const validateRequest = (body: unknown): ImageProxyRequest => {
     imageBase64: normalizeBase64(candidate.imageBase64),
     mimeType: candidate.mimeType,
     model: candidate.model,
+    aspect: parseEnumValue(candidate.aspect, IMAGE_ASPECT_VALUES, "auto", "aspect", candidate.provider),
+    quality: parseEnumValue(candidate.quality, IMAGE_QUALITY_VALUES, "medium", "quality", candidate.provider),
   };
 };
 
@@ -191,8 +219,8 @@ const generateWithOpenAI = async (request: ImageProxyRequest): Promise<ImageProx
   form.append("image[]", imageBlob, "source-image");
   form.append("prompt", request.prompt);
   form.append("output_format", "png");
-  form.append("quality", "medium");
-  form.append("size", "auto");
+  form.append("quality", request.quality);
+  form.append("size", request.aspect);
 
   const response = await fetch("https://api.openai.com/v1/images/edits", {
     method: "POST",
@@ -250,6 +278,11 @@ const generateWithGemini = async (request: ImageProxyRequest): Promise<ImageProx
       code: "missing_api_key",
       message: "GEMINI_API_KEY is not configured on the server.",
     };
+  }
+
+  if (!didLogGeminiAspectQualityWarning) {
+    console.warn("[image-proxy] warning: gemini path ignores aspect/quality");
+    didLogGeminiAspectQualityWarning = true;
   }
 
   const ai = new GoogleGenAI({ apiKey });

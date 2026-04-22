@@ -5,7 +5,7 @@ import ControlPanel from './components/ControlPanel';
 import ComparisonSlider from './components/ComparisonSlider';
 import PipelineViewer from './components/PipelineViewer';
 import HistoryPanel from './components/HistoryPanel';
-import { CameraBody, LensModel, Aperture, ExposureCompensation, LightingCondition, SceneContext, ClothingOption, PoseOption, OutputProfile, SimulationParams, ProcessingStep, HistoryItem } from './types';
+import { CameraBody, LensModel, Aperture, ExposureCompensation, LightingCondition, SceneContext, ClothingOption, PoseOption, OutputProfile, ImageAspect, ImageQuality, SimulationParams, ProcessingStep, HistoryItem } from './types';
 import { generateSimulationWithProvider, ImageProviderError, ImageProviderId } from './services/imageProvider';
 import { buildSimulationPrompt } from './services/simulationPrompt';
 
@@ -19,6 +19,8 @@ const DEFAULT_PARAMS: SimulationParams = {
   clothing: ClothingOption.OUTDOOR_SHELL_TEAL,
   pose: PoseOption.ORIGINAL,
   outputProfile: OutputProfile.LOG_FLAT,
+  aspect: ImageAspect.AUTO,
+  quality: ImageQuality.MEDIUM,
   fidelity: 90
 };
 
@@ -144,6 +146,8 @@ function App() {
         provider: result.provider || providerId,
         model: result.model,
         latencyMs: result.latencyMs,
+        aspect: params.aspect,
+        quality: params.quality,
         debugPrompt: result.debugPrompt,
       };
       
@@ -200,6 +204,8 @@ function App() {
     const metadata = history.map(item => ({
       filename: `LensLab_${item.id}.png`,
       timestamp: new Date(item.timestamp).toISOString(),
+      aspect: item.aspect,
+      quality: item.quality,
       parameters: item.params
     }));
     
@@ -360,6 +366,7 @@ function App() {
         <ControlPanel 
           params={params} 
           setParams={setParams} 
+          providerId={providerId}
           isProcessing={isProcessing}
           onGenerate={handleGenerate}
         />

@@ -145,6 +145,20 @@ export enum OutputProfile {
   HIGH_CONTRAST = 'High Contrast B&W'
 }
 
+export enum ImageAspect {
+  AUTO = 'auto',
+  SQUARE = '1024x1024',
+  LANDSCAPE = '1536x1024',
+  PORTRAIT = '1024x1536'
+}
+
+export enum ImageQuality {
+  AUTO = 'auto',
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high'
+}
+
 export const CAMERA_BODY_LABELS: Record<CameraBody, string> = {
   [CameraBody.SMARTPHONE]: 'スマートフォン（入力画像）',
   [CameraBody.PENTAX_K1]: 'Pentax K-1（フルサイズ）',
@@ -455,6 +469,20 @@ export const OUTPUT_PROFILE_LABELS: Record<OutputProfile, string> = {
   [OutputProfile.HIGH_CONTRAST]: '高コントラスト白黒'
 };
 
+export const IMAGE_ASPECT_LABELS: Record<ImageAspect, string> = {
+  [ImageAspect.AUTO]: '自動',
+  [ImageAspect.SQUARE]: '正方形 (1:1)',
+  [ImageAspect.LANDSCAPE]: '横長 (3:2)',
+  [ImageAspect.PORTRAIT]: '縦長 (2:3)'
+};
+
+export const IMAGE_QUALITY_LABELS: Record<ImageQuality, string> = {
+  [ImageQuality.AUTO]: '自動',
+  [ImageQuality.LOW]: 'Low (高速)',
+  [ImageQuality.MEDIUM]: 'Medium (標準)',
+  [ImageQuality.HIGH]: 'High (高精細・遅い)'
+};
+
 export interface SimulationParams {
   camera: CameraBody;
   lens: LensModel;
@@ -465,6 +493,8 @@ export interface SimulationParams {
   clothing: ClothingOption;
   pose: PoseOption;
   outputProfile: OutputProfile;
+  aspect: ImageAspect;
+  quality: ImageQuality;
   fidelity: number; // 0-100
   customLocation?: CustomLocation;
 }
@@ -489,5 +519,7 @@ export interface HistoryItem {
   provider?: 'gemini' | 'openai';
   model?: string;
   latencyMs?: number;
+  aspect?: ImageAspect;
+  quality?: ImageQuality;
   debugPrompt?: string;
 }
