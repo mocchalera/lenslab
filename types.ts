@@ -90,7 +90,43 @@ export enum ClothingOption {
   LEATHER_JACKET = 'Biker Leather Jacket (Vintage)',
   EVENING_GOWN_SILK = 'Evening Silk Dress/Suit (Formal)',
   CYBERPUNK_TECHWEAR = 'Techwear (Matte Black/Straps)',
-  VINTAGE_DENIM = '90s Washed Denim Jacket'
+  VINTAGE_DENIM = '90s Washed Denim Jacket',
+  T_SHIRT_WHITE = 'White T-Shirt',
+  OVERSIZED_HOODIE = 'Oversized Hoodie',
+  DENIM_ON_DENIM = 'Denim on Denim',
+  OXFORD_SHIRT = 'Oxford Shirt',
+  SWEATSHIRT_VINTAGE = 'Vintage Sweatshirt',
+  CARGO_PANTS_STYLE = 'Cargo Pants Full Style',
+  BLACK_SUIT_THREE_PIECE = 'Black Three-Piece Suit',
+  NAVY_SUIT_TAILORED = 'Navy Tailored Suit',
+  CHANEL_TWEED = 'Chanel-Style Tweed Jacket',
+  PEARL_NECKLACE_DRESS = 'Pearl Necklace and Dress',
+  TUXEDO_BLACK_TIE = 'Black Tie Tuxedo',
+  MOUNTAIN_PARKA_GORE = 'Gore-Tex Mountain Parka',
+  FLEECE_PATAGONIA = 'Patagonia-Style Fleece',
+  DOWN_JACKET_PUFFY = 'Puffy Down Jacket',
+  HIKING_GEAR_FULL = 'Full Hiking Gear',
+  FISHERMAN_SWEATER = 'Fisherman Sweater',
+  YOHJI_BLACK_AVANT = 'Yohji Yamamoto-Style All Black',
+  COMME_DES_GARCONS_DECONSTRUCTED = 'Comme des Garcons-Style Deconstructed',
+  MONOCHROME_MINIMAL = 'Monochrome Minimal',
+  ASYMMETRIC_ARCHITECTURAL = 'Asymmetric Architectural Design',
+  STREETWEAR_SUPREME_STYLE = 'Supreme-Style Streetwear',
+  OVERSIZED_GRAPHIC_TEE = 'Oversized Graphic Tee',
+  SNEAKER_CULTURE_FULL = 'Full Sneaker Culture Fit',
+  BOMBER_JACKET_90S = '90s Bomber Jacket',
+  KIMONO_CASUAL = 'Casual Kimono',
+  KIMONO_FORMAL = 'Formal Kimono',
+  JINBEI_SUMMER = 'Summer Jinbei',
+  YUKATA_FESTIVAL = 'Festival Yukata',
+  TRENCH_COAT_BURBERRY = 'Burberry-Style Trench Coat',
+  CASHMERE_COAT_CAMEL = 'Camel Cashmere Coat',
+  SUMMER_LINEN_WHITE = 'White Summer Linen Set',
+  KNITWEAR_OVERSIZED_CREAM = 'Oversized Cream Knitwear',
+  DETECTIVE_NOIR = 'Noir Detective Outfit',
+  ROCKSTAR_LEATHER_FULL = 'Full Rockstar Leather',
+  VICTORIAN_GOTHIC = 'Victorian Gothic',
+  SPACE_AGE_FUTURISTIC = 'Space Age Futuristic'
 }
 
 export enum PoseOption {
@@ -200,8 +236,207 @@ export const CLOTHING_OPTION_LABELS: Record<ClothingOption, string> = {
   [ClothingOption.LEATHER_JACKET]: 'ヴィンテージレザージャケット',
   [ClothingOption.EVENING_GOWN_SILK]: 'フォーマルなイブニングウェア',
   [ClothingOption.CYBERPUNK_TECHWEAR]: 'マットブラックのテックウェア',
-  [ClothingOption.VINTAGE_DENIM]: '90年代ウォッシュデニム'
+  [ClothingOption.VINTAGE_DENIM]: '90年代ウォッシュデニム',
+  [ClothingOption.T_SHIRT_WHITE]: '白Tシャツ',
+  [ClothingOption.OVERSIZED_HOODIE]: 'オーバーサイズフーディ',
+  [ClothingOption.DENIM_ON_DENIM]: 'デニム・オン・デニム',
+  [ClothingOption.OXFORD_SHIRT]: 'オックスフォードシャツ',
+  [ClothingOption.SWEATSHIRT_VINTAGE]: 'ヴィンテージスウェット',
+  [ClothingOption.CARGO_PANTS_STYLE]: 'カーゴパンツ（上下セット）',
+  [ClothingOption.BLACK_SUIT_THREE_PIECE]: 'ブラックスリーピーススーツ',
+  [ClothingOption.NAVY_SUIT_TAILORED]: 'ネイビーテーラードスーツ',
+  [ClothingOption.CHANEL_TWEED]: 'シャネル風ツイードジャケット',
+  [ClothingOption.PEARL_NECKLACE_DRESS]: 'パールネックレス+ドレス',
+  [ClothingOption.TUXEDO_BLACK_TIE]: 'タキシード（ブラックタイ）',
+  [ClothingOption.MOUNTAIN_PARKA_GORE]: 'マウンテンパーカ（Gore-Tex）',
+  [ClothingOption.FLEECE_PATAGONIA]: 'フリース（パタゴニア風）',
+  [ClothingOption.DOWN_JACKET_PUFFY]: 'ダウンジャケット',
+  [ClothingOption.HIKING_GEAR_FULL]: 'ハイキング装備フルセット',
+  [ClothingOption.FISHERMAN_SWEATER]: 'フィッシャーマンセーター',
+  [ClothingOption.YOHJI_BLACK_AVANT]: 'ヨウジヤマモト風オールブラック',
+  [ClothingOption.COMME_DES_GARCONS_DECONSTRUCTED]: 'コム・デ・ギャルソン風デコンストラクト',
+  [ClothingOption.MONOCHROME_MINIMAL]: '白×黒のミニマル',
+  [ClothingOption.ASYMMETRIC_ARCHITECTURAL]: 'アシンメトリー建築的デザイン',
+  [ClothingOption.STREETWEAR_SUPREME_STYLE]: 'ストリートウェア（Supreme系）',
+  [ClothingOption.OVERSIZED_GRAPHIC_TEE]: 'オーバーサイズグラフィックT',
+  [ClothingOption.SNEAKER_CULTURE_FULL]: 'スニーカーカルチャー全身',
+  [ClothingOption.BOMBER_JACKET_90S]: '90年代ボンバージャケット',
+  [ClothingOption.KIMONO_CASUAL]: 'カジュアル着物',
+  [ClothingOption.KIMONO_FORMAL]: 'フォーマル着物',
+  [ClothingOption.JINBEI_SUMMER]: '甚平',
+  [ClothingOption.YUKATA_FESTIVAL]: '浴衣（夏祭り）',
+  [ClothingOption.TRENCH_COAT_BURBERRY]: 'トレンチコート',
+  [ClothingOption.CASHMERE_COAT_CAMEL]: 'キャメルカシミヤコート',
+  [ClothingOption.SUMMER_LINEN_WHITE]: '夏のリネン白セット',
+  [ClothingOption.KNITWEAR_OVERSIZED_CREAM]: 'オーバーサイズニット',
+  [ClothingOption.DETECTIVE_NOIR]: '探偵ノワール（ハット+コート）',
+  [ClothingOption.ROCKSTAR_LEATHER_FULL]: 'ロックスター全身レザー',
+  [ClothingOption.VICTORIAN_GOTHIC]: 'ヴィクトリアン・ゴシック',
+  [ClothingOption.SPACE_AGE_FUTURISTIC]: 'スペースエイジ'
 };
+
+export type ClothingThemeId =
+  | 'original'
+  | 'casual'
+  | 'formal'
+  | 'outdoor'
+  | 'editorial'
+  | 'street'
+  | 'japanese'
+  | 'seasonal'
+  | 'dramatic';
+
+export interface ClothingTheme {
+  id: ClothingThemeId;
+  label: string;
+  items: ClothingOption[];
+}
+
+export const CLOTHING_OPTION_ICONS: Record<ClothingOption, string> = {
+  [ClothingOption.ORIGINAL]: '◎',
+  [ClothingOption.OUTDOOR_SHELL_TEAL]: '△',
+  [ClothingOption.FORMAL_SHIRT]: '□',
+  [ClothingOption.TURTLENECK_WOOL]: '●',
+  [ClothingOption.LEATHER_JACKET]: '◆',
+  [ClothingOption.EVENING_GOWN_SILK]: '◇',
+  [ClothingOption.CYBERPUNK_TECHWEAR]: '✦',
+  [ClothingOption.VINTAGE_DENIM]: '▣',
+  [ClothingOption.T_SHIRT_WHITE]: 'T',
+  [ClothingOption.OVERSIZED_HOODIE]: 'H',
+  [ClothingOption.DENIM_ON_DENIM]: 'D',
+  [ClothingOption.OXFORD_SHIRT]: 'O',
+  [ClothingOption.SWEATSHIRT_VINTAGE]: 'S',
+  [ClothingOption.CARGO_PANTS_STYLE]: 'C',
+  [ClothingOption.BLACK_SUIT_THREE_PIECE]: '3',
+  [ClothingOption.NAVY_SUIT_TAILORED]: 'N',
+  [ClothingOption.CHANEL_TWEED]: 'C',
+  [ClothingOption.PEARL_NECKLACE_DRESS]: 'P',
+  [ClothingOption.TUXEDO_BLACK_TIE]: 'T',
+  [ClothingOption.MOUNTAIN_PARKA_GORE]: 'M',
+  [ClothingOption.FLEECE_PATAGONIA]: 'F',
+  [ClothingOption.DOWN_JACKET_PUFFY]: 'D',
+  [ClothingOption.HIKING_GEAR_FULL]: 'H',
+  [ClothingOption.FISHERMAN_SWEATER]: 'K',
+  [ClothingOption.YOHJI_BLACK_AVANT]: 'Y',
+  [ClothingOption.COMME_DES_GARCONS_DECONSTRUCTED]: 'G',
+  [ClothingOption.MONOCHROME_MINIMAL]: 'M',
+  [ClothingOption.ASYMMETRIC_ARCHITECTURAL]: 'A',
+  [ClothingOption.STREETWEAR_SUPREME_STYLE]: 'S',
+  [ClothingOption.OVERSIZED_GRAPHIC_TEE]: 'G',
+  [ClothingOption.SNEAKER_CULTURE_FULL]: 'SN',
+  [ClothingOption.BOMBER_JACKET_90S]: 'B',
+  [ClothingOption.KIMONO_CASUAL]: '和',
+  [ClothingOption.KIMONO_FORMAL]: '礼',
+  [ClothingOption.JINBEI_SUMMER]: '甚',
+  [ClothingOption.YUKATA_FESTIVAL]: '浴',
+  [ClothingOption.TRENCH_COAT_BURBERRY]: 'Tr',
+  [ClothingOption.CASHMERE_COAT_CAMEL]: 'Ca',
+  [ClothingOption.SUMMER_LINEN_WHITE]: 'Li',
+  [ClothingOption.KNITWEAR_OVERSIZED_CREAM]: 'Kn',
+  [ClothingOption.DETECTIVE_NOIR]: 'N',
+  [ClothingOption.ROCKSTAR_LEATHER_FULL]: 'R',
+  [ClothingOption.VICTORIAN_GOTHIC]: 'V',
+  [ClothingOption.SPACE_AGE_FUTURISTIC]: 'F'
+};
+
+export const CLOTHING_THEMES: ClothingTheme[] = [
+  {
+    id: 'original',
+    label: '原型維持',
+    items: [ClothingOption.ORIGINAL]
+  },
+  {
+    id: 'casual',
+    label: 'カジュアル',
+    items: [
+      ClothingOption.T_SHIRT_WHITE,
+      ClothingOption.OVERSIZED_HOODIE,
+      ClothingOption.DENIM_ON_DENIM,
+      ClothingOption.OXFORD_SHIRT,
+      ClothingOption.SWEATSHIRT_VINTAGE,
+      ClothingOption.CARGO_PANTS_STYLE,
+      ClothingOption.VINTAGE_DENIM,
+      ClothingOption.FORMAL_SHIRT
+    ]
+  },
+  {
+    id: 'formal',
+    label: 'フォーマル・モード',
+    items: [
+      ClothingOption.BLACK_SUIT_THREE_PIECE,
+      ClothingOption.NAVY_SUIT_TAILORED,
+      ClothingOption.CHANEL_TWEED,
+      ClothingOption.PEARL_NECKLACE_DRESS,
+      ClothingOption.TUXEDO_BLACK_TIE,
+      ClothingOption.EVENING_GOWN_SILK,
+      ClothingOption.TURTLENECK_WOOL
+    ]
+  },
+  {
+    id: 'outdoor',
+    label: 'アウトドア',
+    items: [
+      ClothingOption.MOUNTAIN_PARKA_GORE,
+      ClothingOption.FLEECE_PATAGONIA,
+      ClothingOption.DOWN_JACKET_PUFFY,
+      ClothingOption.HIKING_GEAR_FULL,
+      ClothingOption.FISHERMAN_SWEATER,
+      ClothingOption.OUTDOOR_SHELL_TEAL
+    ]
+  },
+  {
+    id: 'editorial',
+    label: 'エディトリアル',
+    items: [
+      ClothingOption.YOHJI_BLACK_AVANT,
+      ClothingOption.COMME_DES_GARCONS_DECONSTRUCTED,
+      ClothingOption.MONOCHROME_MINIMAL,
+      ClothingOption.ASYMMETRIC_ARCHITECTURAL,
+      ClothingOption.CYBERPUNK_TECHWEAR
+    ]
+  },
+  {
+    id: 'street',
+    label: 'ストリート',
+    items: [
+      ClothingOption.STREETWEAR_SUPREME_STYLE,
+      ClothingOption.OVERSIZED_GRAPHIC_TEE,
+      ClothingOption.SNEAKER_CULTURE_FULL,
+      ClothingOption.BOMBER_JACKET_90S,
+      ClothingOption.LEATHER_JACKET
+    ]
+  },
+  {
+    id: 'japanese',
+    label: '和',
+    items: [
+      ClothingOption.KIMONO_CASUAL,
+      ClothingOption.KIMONO_FORMAL,
+      ClothingOption.JINBEI_SUMMER,
+      ClothingOption.YUKATA_FESTIVAL
+    ]
+  },
+  {
+    id: 'seasonal',
+    label: '季節',
+    items: [
+      ClothingOption.TRENCH_COAT_BURBERRY,
+      ClothingOption.CASHMERE_COAT_CAMEL,
+      ClothingOption.SUMMER_LINEN_WHITE,
+      ClothingOption.KNITWEAR_OVERSIZED_CREAM
+    ]
+  },
+  {
+    id: 'dramatic',
+    label: 'ドラマチック',
+    items: [
+      ClothingOption.DETECTIVE_NOIR,
+      ClothingOption.ROCKSTAR_LEATHER_FULL,
+      ClothingOption.VICTORIAN_GOTHIC,
+      ClothingOption.SPACE_AGE_FUTURISTIC
+    ]
+  }
+];
 
 export const POSE_OPTION_LABELS: Record<PoseOption, string> = {
   [PoseOption.ORIGINAL]: '元のポーズを維持',

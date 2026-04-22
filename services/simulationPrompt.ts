@@ -534,6 +534,222 @@ const getClothingPrompt = (clothing: ClothingOption): string => {
       return `
         - CLOTHING: KEEP EXACT ORIGINAL CLOTHING. Do not change color or texture.
       `;
+    case ClothingOption.T_SHIRT_WHITE:
+      return `
+        - CLOTHING CHANGE: White T-shirt.
+        - MATERIAL: Clean heavyweight cotton with subtle weave and natural wrinkles.
+        - STYLE: Minimal casual, timeless, relaxed fit, no visible logos.
+      `;
+    case ClothingOption.OVERSIZED_HOODIE:
+      return `
+        - CLOTHING CHANGE: Oversized hoodie.
+        - MATERIAL: Thick fleece cotton, dropped shoulders, soft ribbed cuffs.
+        - STYLE: Relaxed street casual with cozy volume and modern silhouette.
+      `;
+    case ClothingOption.DENIM_ON_DENIM:
+      return `
+        - CLOTHING CHANGE: Denim-on-denim full outfit.
+        - MATERIAL: Blue denim jacket and jeans with visible twill texture and fading.
+        - STYLE: Casual Americana, layered, confident, slightly vintage.
+      `;
+    case ClothingOption.OXFORD_SHIRT:
+      return `
+        - CLOTHING CHANGE: Oxford button-down shirt.
+        - MATERIAL: Crisp oxford cloth with subtle basket weave.
+        - STYLE: Ivy casual, clean collar roll, understated and intelligent.
+      `;
+    case ClothingOption.SWEATSHIRT_VINTAGE:
+      return `
+        - CLOTHING CHANGE: Vintage sweatshirt.
+        - MATERIAL: Washed cotton fleece, slightly faded, ribbed collar and cuffs.
+        - STYLE: 1980s collegiate casual, soft worn-in charm.
+      `;
+    case ClothingOption.CARGO_PANTS_STYLE:
+      return `
+        - CLOTHING CHANGE: Coordinated cargo pants style.
+        - MATERIAL: Cotton ripstop overshirt or utility top with cargo trousers.
+        - STYLE: Functional casual, pockets, straps, matte earth colors.
+      `;
+    case ClothingOption.BLACK_SUIT_THREE_PIECE:
+      return `
+        - CLOTHING CHANGE: Black three-piece suit.
+        - MATERIAL: Fine wool, tailored vest, sharp lapels, pressed trousers.
+        - STYLE: Formal, powerful, controlled silhouette, high-end tailoring.
+      `;
+    case ClothingOption.NAVY_SUIT_TAILORED:
+      return `
+        - CLOTHING CHANGE: Navy tailored suit.
+        - MATERIAL: Smooth worsted wool, structured shoulders, precise tailoring.
+        - STYLE: Elegant business formal, refined and trustworthy.
+      `;
+    case ClothingOption.CHANEL_TWEED:
+      return `
+        - CLOTHING CHANGE: Chanel-style tweed jacket.
+        - MATERIAL: Textured boucle tweed, braided trim, subtle metallic threads.
+        - STYLE: Parisian elegance, classic luxury, feminine structure.
+      `;
+    case ClothingOption.PEARL_NECKLACE_DRESS:
+      return `
+        - CLOTHING CHANGE: Dress with pearl necklace.
+        - MATERIAL: Elegant dress fabric with soft drape and luminous pearls.
+        - STYLE: Formal romantic, refined, graceful, gala-ready.
+      `;
+    case ClothingOption.TUXEDO_BLACK_TIE:
+      return `
+        - CLOTHING CHANGE: Black tie tuxedo.
+        - MATERIAL: Black wool tuxedo, satin lapels, crisp white shirt, bow tie.
+        - STYLE: Classic evening formal, cinematic, polished luxury.
+      `;
+    case ClothingOption.MOUNTAIN_PARKA_GORE:
+      return `
+        - CLOTHING CHANGE: Gore-Tex mountain parka.
+        - MATERIAL: Waterproof technical shell, taped seams, matte outdoor fabric.
+        - STYLE: Alpine functional, premium gear, layered and weather-ready.
+      `;
+    case ClothingOption.FLEECE_PATAGONIA:
+      return `
+        - CLOTHING CHANGE: Patagonia-style fleece.
+        - MATERIAL: Textured pile fleece with outdoor trim and nylon pocket details.
+        - STYLE: Warm outdoor casual, practical, friendly, mountain lifestyle.
+      `;
+    case ClothingOption.DOWN_JACKET_PUFFY:
+      return `
+        - CLOTHING CHANGE: Puffy down jacket.
+        - MATERIAL: Quilted nylon shell with voluminous down chambers.
+        - STYLE: Winter outdoor, cozy, sculptural silhouette, glossy highlights.
+      `;
+    case ClothingOption.HIKING_GEAR_FULL:
+      return `
+        - CLOTHING CHANGE: Full hiking gear.
+        - MATERIAL: Layered technical top, hiking pants, straps, small backpack details.
+        - STYLE: Trail-ready, functional, weatherproof, adventurous.
+      `;
+    case ClothingOption.FISHERMAN_SWEATER:
+      return `
+        - CLOTHING CHANGE: Fisherman sweater.
+        - MATERIAL: Thick cream wool with cable knit texture and heavy stitch relief.
+        - STYLE: Coastal traditional, warm, tactile, romantic naturalism.
+      `;
+    case ClothingOption.YOHJI_BLACK_AVANT:
+      return `
+        - CLOTHING CHANGE: Yohji Yamamoto-style all black.
+        - MATERIAL: Flowing black wool and cotton layers with deep matte texture.
+        - STYLE: Avant-garde Japanese mode, oversized drape, intellectual darkness.
+      `;
+    case ClothingOption.COMME_DES_GARCONS_DECONSTRUCTED:
+      return `
+        - CLOTHING CHANGE: Comme des Garcons-style deconstructed outfit.
+        - MATERIAL: Asymmetric panels, exposed seams, layered black/white fabric.
+        - STYLE: Experimental fashion, sculptural, conceptual, art-school energy.
+      `;
+    case ClothingOption.MONOCHROME_MINIMAL:
+      return `
+        - CLOTHING CHANGE: Monochrome minimal outfit.
+        - MATERIAL: Clean black and white fabrics, precise cuts, no decoration.
+        - STYLE: Minimal, architectural, gallery-ready, quiet sophistication.
+      `;
+    case ClothingOption.ASYMMETRIC_ARCHITECTURAL:
+      return `
+        - CLOTHING CHANGE: Asymmetric architectural design.
+        - MATERIAL: Structured fabric with angular folds, off-center closure, bold geometry.
+        - STYLE: High-fashion editorial, sculptural silhouette, futuristic elegance.
+      `;
+    case ClothingOption.STREETWEAR_SUPREME_STYLE:
+      return `
+        - CLOTHING CHANGE: Supreme-style streetwear.
+        - MATERIAL: Boxy hoodie or jacket, bold graphic elements, premium street cotton.
+        - STYLE: Hype streetwear, confident, urban, youth culture.
+      `;
+    case ClothingOption.OVERSIZED_GRAPHIC_TEE:
+      return `
+        - CLOTHING CHANGE: Oversized graphic T-shirt.
+        - MATERIAL: Heavy cotton jersey, large front graphic, relaxed drape.
+        - STYLE: Street casual, expressive, music and skate culture influence.
+      `;
+    case ClothingOption.SNEAKER_CULTURE_FULL:
+      return `
+        - CLOTHING CHANGE: Full sneaker culture outfit.
+        - MATERIAL: Layered streetwear with premium sneakers, socks, shorts or relaxed pants.
+        - STYLE: Sneakerhead styling, clean coordination, collectible culture.
+      `;
+    case ClothingOption.BOMBER_JACKET_90S:
+      return `
+        - CLOTHING CHANGE: 90s bomber jacket.
+        - MATERIAL: Nylon bomber with ribbed cuffs, slightly oversized shape.
+        - STYLE: Retro street, casual toughness, nostalgic urban silhouette.
+      `;
+    case ClothingOption.KIMONO_CASUAL:
+      return `
+        - CLOTHING CHANGE: Casual kimono.
+        - MATERIAL: Soft cotton or linen kimono with subtle pattern and natural folds.
+        - STYLE: Everyday Japanese traditional, relaxed, tasteful, modern casual.
+      `;
+    case ClothingOption.KIMONO_FORMAL:
+      return `
+        - CLOTHING CHANGE: Formal kimono.
+        - MATERIAL: Fine silk kimono with elegant patterning, obi, refined drape.
+        - STYLE: Ceremonial Japanese elegance, dignified and precise.
+      `;
+    case ClothingOption.JINBEI_SUMMER:
+      return `
+        - CLOTHING CHANGE: Summer jinbei.
+        - MATERIAL: Lightweight cotton weave, short sleeves, relaxed waist tie.
+        - STYLE: Japanese summer casual, breathable, intimate, local festival mood.
+      `;
+    case ClothingOption.YUKATA_FESTIVAL:
+      return `
+        - CLOTHING CHANGE: Festival yukata.
+        - MATERIAL: Cotton yukata with seasonal pattern and obi.
+        - STYLE: Summer festival, romantic, traditional, evening lantern atmosphere.
+      `;
+    case ClothingOption.TRENCH_COAT_BURBERRY:
+      return `
+        - CLOTHING CHANGE: Burberry-style trench coat.
+        - MATERIAL: Beige cotton gabardine, belt, storm flap, classic check lining hints.
+        - STYLE: London classic, cinematic, rainy-day elegance.
+      `;
+    case ClothingOption.CASHMERE_COAT_CAMEL:
+      return `
+        - CLOTHING CHANGE: Camel cashmere coat.
+        - MATERIAL: Soft camel cashmere wool, long tailored overcoat, brushed texture.
+        - STYLE: Winter luxury, quiet wealth, warm romantic sophistication.
+      `;
+    case ClothingOption.SUMMER_LINEN_WHITE:
+      return `
+        - CLOTHING CHANGE: White summer linen set.
+        - MATERIAL: Breathable white linen shirt and trousers, visible weave, relaxed wrinkles.
+        - STYLE: Resort minimal, airy, high-key, elegant summer ease.
+      `;
+    case ClothingOption.KNITWEAR_OVERSIZED_CREAM:
+      return `
+        - CLOTHING CHANGE: Oversized cream knitwear.
+        - MATERIAL: Chunky cream wool knit, soft fibers, large relaxed volume.
+        - STYLE: Romantic winter softness, cozy, gentle, tactile.
+      `;
+    case ClothingOption.DETECTIVE_NOIR:
+      return `
+        - CLOTHING CHANGE: Noir detective outfit.
+        - MATERIAL: Dark coat, fedora hat, crisp shirt, subtle tie.
+        - STYLE: Film noir mystery, shadowy, investigative, cinematic drama.
+      `;
+    case ClothingOption.ROCKSTAR_LEATHER_FULL:
+      return `
+        - CLOTHING CHANGE: Full rockstar leather outfit.
+        - MATERIAL: Black leather jacket, leather pants, metal zippers and hardware.
+        - STYLE: Stage-ready, rebellious, glossy, high-energy rock presence.
+      `;
+    case ClothingOption.VICTORIAN_GOTHIC:
+      return `
+        - CLOTHING CHANGE: Victorian gothic outfit.
+        - MATERIAL: Black velvet, lace, high collar, layered historical details.
+        - STYLE: Dark romantic, antique, dramatic, theatrical elegance.
+      `;
+    case ClothingOption.SPACE_AGE_FUTURISTIC:
+      return `
+        - CLOTHING CHANGE: Space age futuristic outfit.
+        - MATERIAL: Silver-white synthetic fabric, sculptural panels, reflective accents.
+        - STYLE: Retro-futurist, clean, cosmic, experimental fashion.
+      `;
     default:
       return "";
   }
