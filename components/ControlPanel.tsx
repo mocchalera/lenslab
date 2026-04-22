@@ -3,6 +3,7 @@ import {
   APERTURE_LABELS,
   Aperture,
   CAMERA_BODY_LABELS,
+  CAMERA_MOUNT_MAP,
   CLOTHING_OPTION_ICONS,
   CLOTHING_OPTION_LABELS,
   CLOTHING_THEMES,
@@ -13,6 +14,8 @@ import {
   EXPOSURE_COMPENSATION_LABELS,
   ExposureCompensation,
   LENS_MODEL_LABELS,
+  LENS_MOUNT_LABELS,
+  LENS_MOUNT_MAP,
   LensModel,
   LIGHTING_CONDITION_LABELS,
   LightingCondition,
@@ -58,24 +61,8 @@ const LENS_SPECS: Record<LensModel, number> = {
   [LensModel.MINOLTA_ROKKOR_58_1_2]: 1.2,
   [LensModel.HELIOS_44_2]: 2.0,
   [LensModel.FUJIFILM_GF_80_1_7]: 1.7,
-};
-
-const ALL_PRIME_LENSES = Object.values(LensModel);
-
-// Data: Valid Lenses for each Camera Body
-const COMPATIBILITY_MAP: Record<CameraBody, LensModel[]> = {
-  [CameraBody.PENTAX_K1]: ALL_PRIME_LENSES,
-  [CameraBody.LEICA_M11]: ALL_PRIME_LENSES,
-  [CameraBody.LEICA_Q3]: ALL_PRIME_LENSES,
-  [CameraBody.HASSELBLAD_X2D]: ALL_PRIME_LENSES,
-  [CameraBody.PHASE_ONE_IQ4]: ALL_PRIME_LENSES,
-  [CameraBody.FUJIFILM_GFX100]: ALL_PRIME_LENSES,
-  [CameraBody.FUJIFILM_GFX100_II]: ALL_PRIME_LENSES,
-  [CameraBody.SONY_A7RV]: ALL_PRIME_LENSES,
-  [CameraBody.NIKON_Z8]: ALL_PRIME_LENSES,
-  [CameraBody.CANON_R5_II]: ALL_PRIME_LENSES,
-  [CameraBody.PENTAX_K1_II]: ALL_PRIME_LENSES,
-  [CameraBody.SMARTPHONE]: [] // Not used in this logic
+  [LensModel.HASSELBLAD_XCD_90V_2_5]: 2.5,
+  [LensModel.PHASE_ONE_BLUE_RING_80_2_8]: 2.8,
 };
 
 const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProcessing, onGenerate }) => {
@@ -85,59 +72,68 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
   const [isLocationPickerOpen, setIsLocationPickerOpen] = React.useState(false);
   const needsCustomLocation = params.scene === SceneContext.CUSTOM_MAP_LOCATION;
   const isCustomLocationMissing = needsCustomLocation && !params.customLocation;
+  const currentMount = CAMERA_MOUNT_MAP[params.camera];
+  const availableLenses = React.useMemo(() => {
+    return Object.values(LensModel).filter((lens) => LENS_MOUNT_MAP[lens].includes(currentMount));
+  }, [currentMount]);
   
   const updateParam = <K extends keyof SimulationParams>(key: K, value: SimulationParams[K]) => {
     setParams(prev => ({ ...prev, [key]: value }));
   };
-
-  React.useEffect(() => {
-    setActiveClothingTheme(currentClothingTheme);
-  }, [currentClothingTheme]);
 
   // Helper to parse aperture string to number "f/1.8" -> 1.8
   const getFNumber = (apertureEnum: Aperture): number => {
     return parseFloat(apertureEnum.replace('f/', ''));
   };
 
-  // 1. Handle Camera Change -> Auto-select first compatible lens
-  const handleCameraChange = (newCamera: CameraBody) => {
-    const validLenses = COMPATIBILITY_MAP[newCamera];
-    if (validLenses && validLenses.length > 0) {
-      // Pick the first valid lens
-      const defaultLens = validLenses[0];
-      // Check if current aperture is valid for new lens, if not, reset to max aperture
-      const maxApertureVal = LENS_SPECS[defaultLens];
-      let newAperture = params.aperture;
-      
-      if (getFNumber(params.aperture) < maxApertureVal) {
-         // Find the closest valid aperture or just set to max (e.g., F1_8 or F2_0)
-         // For simplicity, let's find the enum that matches the max aperture or close to it
-         const validAperture = Object.values(Aperture).find(a => getFNumber(a) >= maxApertureVal) || Aperture.F2_8;
-         newAperture = validAperture;
-      }
+  const getAdjustedApertureForLens = (lens: LensModel, aperture: Aperture): Aperture => {
+    const maxApertureVal = LENS_SPECS[lens];
+    if (getFNumber(aperture) >= maxApertureVal) return aperture;
 
-      setParams(prev => ({ 
-        ...prev, 
-        camera: newCamera, 
-        lens: defaultLens,
-        aperture: newAperture 
-      }));
-    } else {
+    return Object.values(Aperture).find(a => getFNumber(a) >= maxApertureVal) || Aperture.F2_8;
+  };
+
+  React.useEffect(() => {
+    setActiveClothingTheme(currentClothingTheme);
+  }, [currentClothingTheme]);
+
+  React.useEffect(() => {
+    if (availableLenses.length === 0 || availableLenses.includes(params.lens)) return;
+
+    const defaultLens = availableLenses[0];
+    setParams(prev => ({
+      ...prev,
+      lens: defaultLens,
+      aperture: getAdjustedApertureForLens(defaultLens, prev.aperture)
+    }));
+  }, [availableLenses, params.lens, setParams]);
+
+  // 1. Handle Camera Change -> Keep compatible lens, otherwise select first lens for the new mount.
+  const handleCameraChange = (newCamera: CameraBody) => {
+    const nextMount = CAMERA_MOUNT_MAP[newCamera];
+    const compatibleLenses = Object.values(LensModel).filter((lens) => LENS_MOUNT_MAP[lens].includes(nextMount));
+    const nextLens = compatibleLenses.includes(params.lens) ? params.lens : compatibleLenses[0];
+
+    if (!nextLens) {
       updateParam('camera', newCamera);
+      return;
     }
+
+    setParams(prev => ({
+      ...prev,
+      camera: newCamera,
+      lens: nextLens,
+      aperture: getAdjustedApertureForLens(nextLens, prev.aperture)
+    }));
   };
 
   // 2. Handle Lens Change -> Check Aperture Compatibility
   const handleLensChange = (newLens: LensModel) => {
-    const maxApertureVal = LENS_SPECS[newLens];
-    if (getFNumber(params.aperture) < maxApertureVal) {
-         // Current aperture is too bright for this lens (e.g. f/1.4 on f/2.0 lens)
-         // Reset to the lens's max aperture (approximate via enum)
-         const validAperture = Object.values(Aperture).find(a => getFNumber(a) >= maxApertureVal) || Aperture.F2_8;
-         setParams(prev => ({ ...prev, lens: newLens, aperture: validAperture }));
-    } else {
-      updateParam('lens', newLens);
-    }
+    setParams(prev => ({
+      ...prev,
+      lens: newLens,
+      aperture: getAdjustedApertureForLens(newLens, prev.aperture)
+    }));
   };
 
   const handleConfirmLocation = (location: CustomLocation) => {
@@ -148,9 +144,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
     }));
     setIsLocationPickerOpen(false);
   };
-
-  // Filter available lenses based on current camera
-  const availableLenses = COMPATIBILITY_MAP[params.camera] || [];
 
   return (
     <div className="w-full h-full flex flex-col bg-zinc-900 border-l border-zinc-800 p-6 overflow-y-auto">
@@ -181,7 +174,10 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
         {/* Gear Section */}
         <div className="space-y-4">
           <div className="space-y-1">
-            <label className="text-[10px] font-semibold text-zinc-500 uppercase">カメラシステム</label>
+            <div className="flex items-center justify-between gap-3">
+              <label className="text-[10px] font-semibold text-zinc-500 uppercase">カメラシステム</label>
+              <span className="text-[10px] text-zinc-500">マウント: {LENS_MOUNT_LABELS[currentMount]}</span>
+            </div>
             <select
               value={params.camera}
               disabled={isProcessing}
@@ -197,7 +193,10 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
           </div>
 
           <div className="space-y-1">
-            <label className="text-[10px] font-semibold text-zinc-500 uppercase">レンズ</label>
+            <div className="flex items-center justify-between gap-3">
+              <label className="text-[10px] font-semibold text-zinc-500 uppercase">レンズ</label>
+              <span className="text-[10px] text-zinc-500">互換: {availableLenses.length}本</span>
+            </div>
             <select
               value={params.lens}
               disabled={isProcessing}
