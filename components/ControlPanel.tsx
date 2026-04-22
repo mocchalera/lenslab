@@ -3,7 +3,10 @@ import {
   APERTURE_LABELS,
   Aperture,
   CAMERA_BODY_LABELS,
+  CLOTHING_OPTION_ICONS,
   CLOTHING_OPTION_LABELS,
+  CLOTHING_THEMES,
+  ClothingThemeId,
   CameraBody,
   ClothingOption,
   EXPOSURE_COMPENSATION_LABELS,
@@ -74,10 +77,17 @@ const COMPATIBILITY_MAP: Record<CameraBody, LensModel[]> = {
 };
 
 const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProcessing, onGenerate }) => {
+  const currentClothingTheme =
+    CLOTHING_THEMES.find((theme) => theme.items.includes(params.clothing))?.id ?? 'original';
+  const [activeClothingTheme, setActiveClothingTheme] = React.useState<ClothingThemeId>(currentClothingTheme);
   
   const updateParam = <K extends keyof SimulationParams>(key: K, value: SimulationParams[K]) => {
     setParams(prev => ({ ...prev, [key]: value }));
   };
+
+  React.useEffect(() => {
+    setActiveClothingTheme(currentClothingTheme);
+  }, [currentClothingTheme]);
 
   // Helper to parse aperture string to number "f/1.8" -> 1.8
   const getFNumber = (apertureEnum: Aperture): number => {
@@ -286,18 +296,70 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
             </select>
           </div>
 
-          <div className="space-y-1">
-            <label className="text-[10px] font-semibold text-zinc-500 uppercase">服装 / スタイリング</label>
-            <select
-              value={params.clothing}
-              disabled={isProcessing}
-              onChange={(e) => updateParam('clothing', e.target.value as ClothingOption)}
-              className="w-full bg-zinc-800 text-zinc-200 text-xs rounded border-zinc-700 focus:ring-blue-500 focus:border-blue-500 p-2"
-            >
-              {Object.values(ClothingOption).map((val) => (
-                <option key={val} value={val}>{CLOTHING_OPTION_LABELS[val]}</option>
-              ))}
-            </select>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] font-semibold text-zinc-500 uppercase">服装 / スタイリング</label>
+              <span className="max-w-[150px] truncate text-[10px] text-blue-300">{CLOTHING_OPTION_LABELS[params.clothing]}</span>
+            </div>
+
+            <div className="overflow-x-auto pb-1">
+              <div className="flex min-w-max gap-1" role="tablist" aria-label="服装テーマ">
+                {CLOTHING_THEMES.map((theme) => {
+                  const isActive = theme.id === activeClothingTheme;
+
+                  return (
+                    <button
+                      key={theme.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={isActive}
+                      disabled={isProcessing}
+                      onClick={() => setActiveClothingTheme(theme.id)}
+                      className={`rounded border px-2 py-1 text-[10px] font-semibold transition-colors ${
+                        isActive
+                          ? 'border-blue-500/70 bg-blue-500/15 text-blue-200'
+                          : 'border-zinc-800 bg-zinc-950 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300'
+                      }`}
+                    >
+                      {theme.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" role="radiogroup" aria-label="服装を選択">
+              {(CLOTHING_THEMES.find((theme) => theme.id === activeClothingTheme)?.items ?? []).map((item) => {
+                const isSelected = params.clothing === item;
+
+                return (
+                  <button
+                    key={item}
+                    type="button"
+                    role="radio"
+                    aria-checked={isSelected}
+                    disabled={isProcessing}
+                    onClick={() => updateParam('clothing', item)}
+                    className={`min-h-20 rounded-lg border p-2 text-left transition-all ${
+                      isSelected
+                        ? 'border-blue-400 bg-blue-500/15 shadow-[0_0_0_1px_rgba(96,165,250,0.35)]'
+                        : 'border-zinc-800 bg-zinc-950 hover:border-zinc-600 hover:bg-zinc-800/70'
+                    }`}
+                  >
+                    <span className={`mb-2 flex h-7 w-7 items-center justify-center rounded text-[11px] font-bold ${
+                      isSelected ? 'bg-blue-500 text-white' : 'bg-zinc-800 text-zinc-300'
+                    }`}>
+                      {CLOTHING_OPTION_ICONS[item]}
+                    </span>
+                    <span className={`block text-[10px] font-medium leading-snug ${
+                      isSelected ? 'text-blue-100' : 'text-zinc-300'
+                    }`}>
+                      {CLOTHING_OPTION_LABELS[item]}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
