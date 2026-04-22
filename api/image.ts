@@ -35,6 +35,7 @@ interface ImageProxyResult {
   usage?: ImageUsage;
   provider: ImageProviderId;
   model: string;
+  debugPrompt: string;
 }
 
 interface OpenAIImagesResponse {
@@ -168,6 +169,10 @@ const toImageUsage = (usage: OpenAIImagesResponse["usage"]): ImageUsage | undefi
   };
 };
 
+const modelForProvider = (provider: ImageProviderId): string => {
+  return provider === "openai" ? OPENAI_MODEL : GEMINI_MODEL;
+};
+
 const generateWithOpenAI = async (request: ImageProxyRequest): Promise<ImageProxyResult> => {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
@@ -232,6 +237,7 @@ const generateWithOpenAI = async (request: ImageProxyRequest): Promise<ImageProx
     usage: toImageUsage(payload.usage),
     provider: "openai",
     model: OPENAI_MODEL,
+    debugPrompt: request.prompt.slice(0, 2000),
   };
 };
 
@@ -278,6 +284,7 @@ const generateWithGemini = async (request: ImageProxyRequest): Promise<ImageProx
     latencyMs: 0,
     provider: "gemini",
     model: GEMINI_MODEL,
+    debugPrompt: request.prompt.slice(0, 2000),
   };
 };
 
@@ -323,15 +330,29 @@ export default async function handler(req: any, res: any) {
 
     const request = validateRequest(body);
     provider = request.provider;
+    const model = modelForProvider(request.provider);
+
+    console.log("[image-proxy] request:", {
+      provider: request.provider,
+      model,
+    });
+    console.log("[image-proxy] prompt:", request.prompt.slice(0, 2000));
 
     const result =
       request.provider === "openai"
         ? await generateWithOpenAI(request)
         : await generateWithGemini(request);
+    const latencyMs = Date.now() - startedAt;
+
+    console.log("[image-proxy] completed:", {
+      provider: request.provider,
+      model,
+      latencyMs,
+    });
 
     sendJson(res, 200, {
       ...result,
-      latencyMs: Date.now() - startedAt,
+      latencyMs,
     });
   } catch (error: any) {
     const normalized = normalizeThrownError(error, provider);

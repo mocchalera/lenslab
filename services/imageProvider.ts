@@ -27,6 +27,7 @@ export interface ImageGenerationResult {
   usage?: ImageUsage;
   provider?: ImageProviderId;
   model?: string;
+  debugPrompt?: string;
 }
 
 export type ImageProviderErrorCode =
@@ -180,6 +181,7 @@ export const requestImageGeneration = async (
     usage: result.usage,
     provider: result.provider ?? request.provider,
     model: result.model,
+    debugPrompt: result.debugPrompt,
   };
 };
 

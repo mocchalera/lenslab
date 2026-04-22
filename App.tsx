@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import JSZip from 'jszip';
 import FileUpload from './components/FileUpload';
 import ControlPanel from './components/ControlPanel';
@@ -7,6 +7,7 @@ import PipelineViewer from './components/PipelineViewer';
 import HistoryPanel from './components/HistoryPanel';
 import { CameraBody, LensModel, Aperture, ExposureCompensation, LightingCondition, SceneContext, ClothingOption, PoseOption, OutputProfile, SimulationParams, ProcessingStep, HistoryItem } from './types';
 import { generateSimulationWithProvider, ImageProviderId } from './services/imageProvider';
+import { buildSimulationPrompt } from './services/simulationPrompt';
 
 const DEFAULT_PARAMS: SimulationParams = {
   camera: CameraBody.PENTAX_K1,
@@ -37,10 +38,12 @@ function App() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [steps, setSteps] = useState<ProcessingStep[]>(INITIAL_STEPS);
   const [error, setError] = useState<string | null>(null);
+  const [promptCopied, setPromptCopied] = useState(false);
   
   // History State
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [currentHistoryId, setCurrentHistoryId] = useState<string | null>(null);
+  const currentPrompt = useMemo(() => buildSimulationPrompt(params), [params]);
 
   // Handle file selection
   const handleFileSelect = (selectedFile: File) => {
@@ -68,6 +71,7 @@ function App() {
 
     setIsProcessing(true);
     setError(null);
+    setPromptCopied(false);
     
     // Reset pipeline UI
     setSteps(INITIAL_STEPS.map(s => ({ ...s, status: 'pending' })));
@@ -107,6 +111,7 @@ function App() {
         provider: result.provider || providerId,
         model: result.model,
         latencyMs: result.latencyMs,
+        debugPrompt: result.debugPrompt,
       };
       
       setHistory(prev => [newItem, ...prev]);
@@ -184,6 +189,17 @@ function App() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const handleCopyPrompt = async () => {
+    try {
+      await navigator.clipboard.writeText(currentPrompt);
+      setPromptCopied(true);
+      window.setTimeout(() => setPromptCopied(false), 1500);
+    } catch (copyError) {
+      console.error("Failed to copy prompt:", copyError);
+      setPromptCopied(false);
+    }
   };
 
   return (
@@ -276,6 +292,32 @@ function App() {
               onDownloadAll={handleDownloadAll}
             />
           )}
+
+          <div className="flex-shrink-0 border-t border-zinc-800 bg-zinc-900/80 px-6 py-3">
+            <details className="group">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-xs font-semibold uppercase tracking-wider text-zinc-400 transition-colors hover:text-zinc-200">
+                <span>Show Prompt</span>
+                <span className="text-zinc-600 transition-transform group-open:rotate-180">⌄</span>
+              </summary>
+              <div className="mt-3 space-y-3">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs text-zinc-500">
+                    Current parameters are converted into the final generation prompt below.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleCopyPrompt}
+                    className="rounded border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-200 transition-colors hover:bg-zinc-700"
+                  >
+                    {promptCopied ? 'Copied' : 'Copy'}
+                  </button>
+                </div>
+                <pre className="max-h-72 overflow-auto whitespace-pre-wrap rounded border border-zinc-800 bg-zinc-950 p-4 text-xs leading-relaxed text-zinc-300">
+                  {currentPrompt}
+                </pre>
+              </div>
+            </details>
+          </div>
 
         </main>
       </div>

@@ -107,4 +107,5 @@ export interface HistoryItem {
   provider?: 'gemini' | 'openai';
   model?: string;
   latencyMs?: number;
+  debugPrompt?: string;
 }
