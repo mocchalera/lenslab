@@ -6,7 +6,7 @@ import ComparisonSlider from './components/ComparisonSlider';
 import PipelineViewer from './components/PipelineViewer';
 import HistoryPanel from './components/HistoryPanel';
 import { CameraBody, LensModel, Aperture, ExposureCompensation, LightingCondition, SceneContext, ClothingOption, PoseOption, OutputProfile, SimulationParams, ProcessingStep, HistoryItem } from './types';
-import { generateSimulation } from './services/geminiService';
+import { generateSimulationWithProvider, ImageProviderId } from './services/imageProvider';
 
 const DEFAULT_PARAMS: SimulationParams = {
   camera: CameraBody.PENTAX_K1,
@@ -33,6 +33,7 @@ function App() {
   const [originalPreview, setOriginalPreview] = useState<string | null>(null);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [params, setParams] = useState<SimulationParams>(DEFAULT_PARAMS);
+  const [providerId, setProviderId] = useState<ImageProviderId>('openai');
   const [isProcessing, setIsProcessing] = useState(false);
   const [steps, setSteps] = useState<ProcessingStep[]>(INITIAL_STEPS);
   const [error, setError] = useState<string | null>(null);
@@ -85,7 +86,8 @@ function App() {
       // Step 3: Lens Profile (Real API Call starts here visually)
       updateStepStatus('3', 'active');
       
-      const resultBase64 = await generateSimulation(file, params);
+      const result = await generateSimulationWithProvider(providerId, file, params);
+      const resultBase64 = result.dataUrl;
       
       updateStepStatus('3', 'complete');
       
@@ -101,7 +103,10 @@ function App() {
         id: crypto.randomUUID(),
         timestamp: Date.now(),
         imageUrl: resultBase64,
-        params: { ...params } // Snapshot current params
+        params: { ...params }, // Snapshot current params
+        provider: result.provider || providerId,
+        model: result.model,
+        latencyMs: result.latencyMs,
       };
       
       setHistory(prev => [newItem, ...prev]);
@@ -197,14 +202,29 @@ function App() {
             <h1 className="font-bold text-lg tracking-tight">LensLab <span className="text-zinc-500 font-normal">AI</span></h1>
           </div>
           
-          {file && (
-             <button 
-               onClick={handleReset}
-               className="text-xs font-medium text-zinc-400 hover:text-white transition-colors"
-             >
-               NEW PROJECT
-             </button>
-          )}
+          <div className="flex items-center gap-3">
+            <label className="flex items-center gap-2 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
+              Provider
+              <select
+                value={providerId}
+                disabled={isProcessing}
+                onChange={(event) => setProviderId(event.target.value as ImageProviderId)}
+                className="bg-zinc-800 text-zinc-200 text-xs rounded border border-zinc-700 focus:ring-blue-500 focus:border-blue-500 px-2 py-1.5 normal-case tracking-normal"
+              >
+                <option value="openai">OpenAI</option>
+                <option value="gemini">Gemini</option>
+              </select>
+            </label>
+
+            {file && (
+               <button 
+                 onClick={handleReset}
+                 className="text-xs font-medium text-zinc-400 hover:text-white transition-colors"
+               >
+                 NEW PROJECT
+               </button>
+            )}
+          </div>
         </header>
 
         <main className="flex-grow relative flex flex-col bg-zinc-950 min-h-0">

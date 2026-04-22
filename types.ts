@@ -104,4 +104,7 @@ export interface HistoryItem {
   timestamp: number;
   imageUrl: string; // Base64
   params: SimulationParams;
+  provider?: 'gemini' | 'openai';
+  model?: string;
+  latencyMs?: number;
 }
