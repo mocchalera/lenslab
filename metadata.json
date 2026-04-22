@@ -1,0 +1,5 @@
+{
+  "name": "LensLab AI",
+  "description": "A high-fidelity camera and lens simulation engine. Transforms smartphone photos into professional portraits using AI-driven optical modeling.",
+  "requestFramePermissions": []
+}
