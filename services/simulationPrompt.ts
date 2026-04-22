@@ -250,6 +250,20 @@ const getLensCharacteristics = (lens: LensModel): string => {
         - COLOR: Fujifilm GFX film color, smooth skin, soft greens, and refined saturation.
         - RESOLUTION: High central detail with medium-format depth and beautifully controlled aberration.
       `;
+    case LensModel.HASSELBLAD_XCD_90V_2_5:
+      return `
+        - OPTICAL CHARACTER: Hasselblad XCD V-series portrait lens, medium-format elegance with a calm modern signature.
+        - BOKEH: Creamy 90mm portrait blur, gentle medium-format falloff, smooth highlight disks without nervous edges.
+        - COLOR: Hasselblad Natural Color Solution with creamy skin, restrained saturation, and refined hue separation.
+        - RESOLUTION: High fine detail with polished micro-contrast, clean correction, and flattering skin texture.
+      `;
+    case LensModel.PHASE_ONE_BLUE_RING_80_2_8:
+      return `
+        - OPTICAL CHARACTER: Phase One Blue Ring commercial standard lens, precise, neutral, and advertising-ready.
+        - BOKEH: Controlled f/2.8 medium-format separation, clean background blur, and product-grade composure.
+        - COLOR: Calibrated commercial color with exact neutrals, clean whites, and luxury catalog consistency.
+        - RESOLUTION: Extreme uniform sharpness across the frame, high resolving power, and minimal optical personality.
+      `;
     default:
       return "- OPTICAL CHARACTER: Standard professional prime lens rendering.";
   }
