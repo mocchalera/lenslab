@@ -79,7 +79,8 @@ export enum SceneContext {
   ROOFTOP_DUSK = 'City Rooftop (Dusk)',
   OLD_LIBRARY = 'Old Library (Dark Academia)',
   TROPICAL_BEACH = 'Tropical Beach (High Key)',
-  RAINY_WINDOW = 'Rainy Window (Glass Texture)'
+  RAINY_WINDOW = 'Rainy Window (Glass Texture)',
+  CUSTOM_MAP_LOCATION = 'Custom Map Location'
 }
 
 export enum ClothingOption {
@@ -225,7 +226,8 @@ export const SCENE_CONTEXT_LABELS: Record<SceneContext, string> = {
   [SceneContext.ROOFTOP_DUSK]: '夕暮れのルーフトップ',
   [SceneContext.OLD_LIBRARY]: '古い図書館',
   [SceneContext.TROPICAL_BEACH]: 'トロピカルビーチ',
-  [SceneContext.RAINY_WINDOW]: '雨の日の窓辺'
+  [SceneContext.RAINY_WINDOW]: '雨の日の窓辺',
+  [SceneContext.CUSTOM_MAP_LOCATION]: '地図で指定した場所'
 };
 
 export const CLOTHING_OPTION_LABELS: Record<ClothingOption, string> = {
@@ -464,6 +466,13 @@ export interface SimulationParams {
   pose: PoseOption;
   outputProfile: OutputProfile;
   fidelity: number; // 0-100
+  customLocation?: CustomLocation;
+}
+
+export interface CustomLocation {
+  placeName: string;
+  lat: number;
+  lng: number;
 }
 
 export interface ProcessingStep {

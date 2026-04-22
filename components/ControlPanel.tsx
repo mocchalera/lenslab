@@ -9,6 +9,7 @@ import {
   ClothingThemeId,
   CameraBody,
   ClothingOption,
+  CustomLocation,
   EXPOSURE_COMPENSATION_LABELS,
   ExposureCompensation,
   LENS_MODEL_LABELS,
@@ -23,6 +24,7 @@ import {
   SceneContext,
   SimulationParams,
 } from '../types';
+import LocationPickerModal from './LocationPickerModal';
 
 interface ControlPanelProps {
   params: SimulationParams;
@@ -80,6 +82,9 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
   const currentClothingTheme =
     CLOTHING_THEMES.find((theme) => theme.items.includes(params.clothing))?.id ?? 'original';
   const [activeClothingTheme, setActiveClothingTheme] = React.useState<ClothingThemeId>(currentClothingTheme);
+  const [isLocationPickerOpen, setIsLocationPickerOpen] = React.useState(false);
+  const needsCustomLocation = params.scene === SceneContext.CUSTOM_MAP_LOCATION;
+  const isCustomLocationMissing = needsCustomLocation && !params.customLocation;
   
   const updateParam = <K extends keyof SimulationParams>(key: K, value: SimulationParams[K]) => {
     setParams(prev => ({ ...prev, [key]: value }));
@@ -133,6 +138,15 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
     } else {
       updateParam('lens', newLens);
     }
+  };
+
+  const handleConfirmLocation = (location: CustomLocation) => {
+    setParams(prev => ({
+      ...prev,
+      scene: SceneContext.CUSTOM_MAP_LOCATION,
+      customLocation: location
+    }));
+    setIsLocationPickerOpen(false);
   };
 
   // Filter available lenses based on current camera
@@ -280,6 +294,31 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
                 <option key={val} value={val}>{SCENE_CONTEXT_LABELS[val]}</option>
               ))}
             </select>
+            <div className="flex items-center justify-between gap-3">
+              <button
+                type="button"
+                disabled={isProcessing}
+                onClick={() => setIsLocationPickerOpen(true)}
+                className="text-[10px] font-semibold text-blue-300 underline-offset-4 transition-colors hover:text-blue-200 hover:underline disabled:text-zinc-600 disabled:no-underline"
+              >
+                または地図から選ぶ
+              </button>
+              {params.customLocation && (
+                <span className="truncate text-[10px] text-zinc-500" title={params.customLocation.placeName}>
+                  {params.customLocation.lat.toFixed(4)}, {params.customLocation.lng.toFixed(4)}
+                </span>
+              )}
+            </div>
+            {params.customLocation && (
+              <p className="line-clamp-2 rounded border border-zinc-800 bg-zinc-950 px-2 py-1.5 text-[10px] leading-snug text-zinc-400">
+                {params.customLocation.placeName}
+              </p>
+            )}
+            {isCustomLocationMissing && (
+              <p className="rounded border border-amber-500/40 bg-amber-500/10 px-2 py-1.5 text-[10px] text-amber-200">
+                地図から場所を選んでください。
+              </p>
+            )}
           </div>
 
            <div className="space-y-1">
@@ -384,16 +423,24 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
       <div className="pt-6 mt-auto">
         <button
           onClick={onGenerate}
-          disabled={isProcessing}
+          disabled={isProcessing || isCustomLocationMissing}
           className={`w-full py-4 text-sm font-bold uppercase tracking-widest rounded-lg shadow-lg transition-all duration-300 ${
-            isProcessing
+            isProcessing || isCustomLocationMissing
               ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
               : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-blue-900/20 hover:scale-[1.02]'
           }`}
         >
-          {isProcessing ? '現像中...' : 'シミュレート'}
+          {isProcessing ? '現像中...' : isCustomLocationMissing ? '場所を選択してください' : 'シミュレート'}
         </button>
       </div>
+
+      {isLocationPickerOpen && (
+        <LocationPickerModal
+          initialLocation={params.customLocation}
+          onClose={() => setIsLocationPickerOpen(false)}
+          onConfirm={handleConfirmLocation}
+        />
+      )}
     </div>
   );
 };

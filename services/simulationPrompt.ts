@@ -409,8 +409,8 @@ const getPoseInstruction = (pose: PoseOption): string => {
   }
 };
 
-const getLocationPrompt = (scene: SceneContext): string => {
-  switch (scene) {
+const getLocationPrompt = (params: SimulationParams): string => {
+  switch (params.scene) {
     case SceneContext.NAGANO_OMACHI:
       return `
         - LOCATION: Nagano Prefecture, Omachi City.
@@ -472,6 +472,17 @@ const getLocationPrompt = (scene: SceneContext): string => {
         - FOREGROUND: Glass pane with raindrops in focus (or slightly out depending on aperture).
         - BACKGROUND: Blurry city lights or garden through the rain.
         - MOOD: Melancholic, reflective, cozy.
+      `;
+    case SceneContext.CUSTOM_MAP_LOCATION:
+      if (!params.customLocation) {
+        return `
+        - LOCATION: Custom map location selected, but no coordinates were provided. Do not invent a location.
+      `;
+      }
+      return `
+        - LOCATION: ${params.customLocation.placeName} (lat ${params.customLocation.lat.toFixed(6)}, lng ${params.customLocation.lng.toFixed(6)}).
+        - LOCAL CONTEXT: Faithfully recreate the region-specific vegetation, architecture, light, air quality, terrain, and cultural background.
+        - ATMOSPHERE: Respect the exact geographic identity instead of using generic travel-photo scenery.
       `;
     default:
       return "";
@@ -790,7 +801,7 @@ export const buildSimulationPrompt = (params: SimulationParams): string => {
   const lightingDetails = getLightingDescription(params.lighting);
   const exposureDetails = getExposureInstruction(params.exposure);
   const poseDetails = getPoseInstruction(params.pose);
-  const locationPrompt = getLocationPrompt(params.scene);
+  const locationPrompt = getLocationPrompt(params);
   const clothingPrompt = getClothingPrompt(params.clothing);
   const outputStylePrompt = getOutputStylePrompt(params);
 

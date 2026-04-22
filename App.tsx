@@ -97,6 +97,11 @@ function App() {
   const handleGenerate = async () => {
     if (!file) return;
 
+    if (params.scene === SceneContext.CUSTOM_MAP_LOCATION && !params.customLocation) {
+      setError('地図からロケーションを選んでください。');
+      return;
+    }
+
     setIsProcessing(true);
     setError(null);
     setPromptCopied(false);
