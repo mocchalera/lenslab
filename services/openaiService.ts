@@ -5,23 +5,23 @@ import {
   ImageProvider,
 } from "./imageProvider";
 
-export const generateGeminiSimulation = async (
+export const generateOpenAISimulation = async (
   imageFile: File,
   params: SimulationParams
 ): Promise<ImageGenerationResult> => {
-  return generateSimulationWithProvider("gemini", imageFile, params);
+  return generateSimulationWithProvider("openai", imageFile, params);
 };
 
 export const generateSimulation = async (
   imageFile: File,
   params: SimulationParams
 ): Promise<string> => {
-  const result = await generateGeminiSimulation(imageFile, params);
+  const result = await generateOpenAISimulation(imageFile, params);
   return result.dataUrl;
 };
 
-export const geminiProvider: ImageProvider = {
-  id: "gemini",
-  label: "Gemini",
-  generateSimulation: generateGeminiSimulation,
+export const openAIProvider: ImageProvider = {
+  id: "openai",
+  label: "OpenAI",
+  generateSimulation: generateOpenAISimulation,
 };

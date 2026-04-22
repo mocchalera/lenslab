@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import JSZip from 'jszip';
 import FileUpload from './components/FileUpload';
 import ControlPanel from './components/ControlPanel';
@@ -6,7 +6,8 @@ import ComparisonSlider from './components/ComparisonSlider';
 import PipelineViewer from './components/PipelineViewer';
 import HistoryPanel from './components/HistoryPanel';
 import { CameraBody, LensModel, Aperture, ExposureCompensation, LightingCondition, SceneContext, ClothingOption, PoseOption, OutputProfile, SimulationParams, ProcessingStep, HistoryItem } from './types';
-import { generateSimulation } from './services/geminiService';
+import { generateSimulationWithProvider, ImageProviderError, ImageProviderId } from './services/imageProvider';
+import { buildSimulationPrompt } from './services/simulationPrompt';
 
 const DEFAULT_PARAMS: SimulationParams = {
   camera: CameraBody.PENTAX_K1,
@@ -22,24 +23,55 @@ const DEFAULT_PARAMS: SimulationParams = {
 };
 
 const INITIAL_STEPS: ProcessingStep[] = [
-  { id: '1', label: 'Analyzing Structure & Depth Map', status: 'pending' },
-  { id: '2', label: 'FaceID & Composition Lock', status: 'pending' },
-  { id: '3', label: 'Applying Lens Optical Profile', status: 'pending' },
-  { id: '4', label: 'Sensor Color Science & Development', status: 'pending' },
+  { id: '1', label: '構造と奥行きを解析', status: 'pending' },
+  { id: '2', label: '顔と構図を固定', status: 'pending' },
+  { id: '3', label: 'レンズ描写を適用', status: 'pending' },
+  { id: '4', label: 'センサー色と現像を反映', status: 'pending' },
 ];
+
+const getJapaneseErrorMessage = (error: unknown): string => {
+  if (error instanceof ImageProviderError) {
+    const suffix = `（${error.code}）`;
+    switch (error.code) {
+      case 'missing_api_key':
+        return `サーバー側のAPIキー設定が不足しています。${suffix}`;
+      case 'bad_request':
+        return `画像生成リクエストの形式に問題があります。${suffix}`;
+      case 'auth':
+        return `プロバイダ認証または組織アクセスで失敗しました。${suffix}`;
+      case 'rate_limited':
+        return `画像生成のレート制限に達しました。少し待って再試行してください。${suffix}`;
+      case 'moderation':
+        return `安全ポリシーにより、この生成リクエストは処理できませんでした。${suffix}`;
+      case 'no_image':
+        return `プロバイダから画像が返りませんでした。${suffix}`;
+      case 'network':
+        return `画像生成プロキシへ接続できませんでした。${suffix}`;
+      case 'method_not_allowed':
+        return `画像生成APIの呼び出し方法が正しくありません。${suffix}`;
+      default:
+        return `画像生成に失敗しました。${suffix}`;
+    }
+  }
+
+  return '画像生成に失敗しました。設定を確認してもう一度お試しください。';
+};
 
 function App() {
   const [file, setFile] = useState<File | null>(null);
   const [originalPreview, setOriginalPreview] = useState<string | null>(null);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [params, setParams] = useState<SimulationParams>(DEFAULT_PARAMS);
+  const [providerId, setProviderId] = useState<ImageProviderId>('openai');
   const [isProcessing, setIsProcessing] = useState(false);
   const [steps, setSteps] = useState<ProcessingStep[]>(INITIAL_STEPS);
   const [error, setError] = useState<string | null>(null);
+  const [promptCopied, setPromptCopied] = useState(false);
   
   // History State
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [currentHistoryId, setCurrentHistoryId] = useState<string | null>(null);
+  const currentPrompt = useMemo(() => buildSimulationPrompt(params), [params]);
 
   // Handle file selection
   const handleFileSelect = (selectedFile: File) => {
@@ -65,8 +97,14 @@ function App() {
   const handleGenerate = async () => {
     if (!file) return;
 
+    if (params.scene === SceneContext.CUSTOM_MAP_LOCATION && !params.customLocation) {
+      setError('地図からロケーションを選んでください。');
+      return;
+    }
+
     setIsProcessing(true);
     setError(null);
+    setPromptCopied(false);
     
     // Reset pipeline UI
     setSteps(INITIAL_STEPS.map(s => ({ ...s, status: 'pending' })));
@@ -85,7 +123,8 @@ function App() {
       // Step 3: Lens Profile (Real API Call starts here visually)
       updateStepStatus('3', 'active');
       
-      const resultBase64 = await generateSimulation(file, params);
+      const result = await generateSimulationWithProvider(providerId, file, params);
+      const resultBase64 = result.dataUrl;
       
       updateStepStatus('3', 'complete');
       
@@ -101,7 +140,11 @@ function App() {
         id: crypto.randomUUID(),
         timestamp: Date.now(),
         imageUrl: resultBase64,
-        params: { ...params } // Snapshot current params
+        params: { ...params }, // Snapshot current params
+        provider: result.provider || providerId,
+        model: result.model,
+        latencyMs: result.latencyMs,
+        debugPrompt: result.debugPrompt,
       };
       
       setHistory(prev => [newItem, ...prev]);
@@ -109,7 +152,7 @@ function App() {
 
     } catch (err: any) {
       console.error(err);
-      setError(err.message || "Simulation failed. Please try again.");
+      setError(getJapaneseErrorMessage(err));
       setSteps(prev => prev.map(s => s.status === 'active' ? { ...s, status: 'pending' } : s));
     } finally {
       setIsProcessing(false);
@@ -181,6 +224,17 @@ function App() {
     document.body.removeChild(link);
   };
 
+  const handleCopyPrompt = async () => {
+    try {
+      await navigator.clipboard.writeText(currentPrompt);
+      setPromptCopied(true);
+      window.setTimeout(() => setPromptCopied(false), 1500);
+    } catch (copyError) {
+      console.error("プロンプトのコピーに失敗しました:", copyError);
+      setPromptCopied(false);
+    }
+  };
+
   return (
     <div className="flex h-screen bg-zinc-950 text-white overflow-hidden">
       
@@ -197,14 +251,29 @@ function App() {
             <h1 className="font-bold text-lg tracking-tight">LensLab <span className="text-zinc-500 font-normal">AI</span></h1>
           </div>
           
-          {file && (
-             <button 
-               onClick={handleReset}
-               className="text-xs font-medium text-zinc-400 hover:text-white transition-colors"
-             >
-               NEW PROJECT
-             </button>
-          )}
+          <div className="flex items-center gap-3">
+            <label className="flex items-center gap-2 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
+              プロバイダ
+              <select
+                value={providerId}
+                disabled={isProcessing}
+                onChange={(event) => setProviderId(event.target.value as ImageProviderId)}
+                className="bg-zinc-800 text-zinc-200 text-xs rounded border border-zinc-700 focus:ring-blue-500 focus:border-blue-500 px-2 py-1.5 normal-case tracking-normal"
+              >
+                <option value="openai">OpenAI (gpt-image-2)</option>
+                <option value="gemini">Gemini (nano-banana)</option>
+              </select>
+            </label>
+
+            {file && (
+               <button 
+                 onClick={handleReset}
+                 className="text-xs font-medium text-zinc-400 hover:text-white transition-colors"
+               >
+                 新規プロジェクト
+               </button>
+            )}
+          </div>
         </header>
 
         <main className="flex-grow relative flex flex-col bg-zinc-950 min-h-0">
@@ -219,8 +288,8 @@ function App() {
 
             {!file ? (
                 <div className="w-full max-w-xl">
-                <h2 className="text-2xl font-bold text-center mb-2">Import Source Image</h2>
-                <p className="text-zinc-500 text-center mb-8">Upload a smartphone photo to simulate professional optics.</p>
+                <h2 className="text-2xl font-bold text-center mb-2">元画像を読み込む</h2>
+                <p className="text-zinc-500 text-center mb-8">スマートフォン写真からプロ向けの光学描写をシミュレーションします。</p>
                 <FileUpload onFileSelect={handleFileSelect} />
                 </div>
             ) : (
@@ -234,7 +303,7 @@ function App() {
                     originalPreview && (
                     <img 
                         src={originalPreview} 
-                        alt="Original" 
+                        alt="元画像" 
                         className="w-full h-full object-contain"
                     />
                     )
@@ -256,6 +325,32 @@ function App() {
               onDownloadAll={handleDownloadAll}
             />
           )}
+
+          <div className="flex-shrink-0 border-t border-zinc-800 bg-zinc-900/80 px-6 py-3">
+            <details className="group">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-xs font-semibold uppercase tracking-wider text-zinc-400 transition-colors hover:text-zinc-200">
+                <span>プロンプトを表示</span>
+                <span className="text-zinc-600 transition-transform group-open:rotate-180">⌄</span>
+              </summary>
+              <div className="mt-3 space-y-3">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs text-zinc-500">
+                    現在の設定から生成に使う最終プロンプトを再構築しています。
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleCopyPrompt}
+                    className="rounded border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-200 transition-colors hover:bg-zinc-700"
+                  >
+                    {promptCopied ? 'コピーしました' : 'コピー'}
+                  </button>
+                </div>
+                <pre className="max-h-72 overflow-auto whitespace-pre-wrap rounded border border-zinc-800 bg-zinc-950 p-4 text-xs leading-relaxed text-zinc-300">
+                  {currentPrompt}
+                </pre>
+              </div>
+            </details>
+          </div>
 
         </main>
       </div>

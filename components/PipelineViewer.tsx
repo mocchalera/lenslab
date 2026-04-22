@@ -9,7 +9,7 @@ const PipelineViewer: React.FC<PipelineViewerProps> = ({ steps }) => {
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
       <div className="w-full max-w-md p-8 bg-zinc-900 rounded-xl border border-zinc-800 shadow-2xl">
-        <h3 className="text-lg font-bold text-white mb-6">Processing Pipeline</h3>
+        <h3 className="text-lg font-bold text-white mb-6">処理パイプライン</h3>
         <div className="space-y-6">
           {steps.map((step, index) => (
             <div key={step.id} className="relative pl-8">
@@ -47,7 +47,7 @@ const PipelineViewer: React.FC<PipelineViewerProps> = ({ steps }) => {
                   {step.label}
                 </p>
                 {step.status === 'active' && (
-                   <p className="text-xs text-blue-400 mt-1 animate-pulse">Processing...</p>
+                   <p className="text-xs text-blue-400 mt-1 animate-pulse">処理中...</p>
                 )}
               </div>
             </div>
