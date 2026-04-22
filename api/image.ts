@@ -101,26 +101,36 @@ const normalizeBase64 = (value: string): string => {
   return commaIndex >= 0 ? value.slice(commaIndex + 1) : value;
 };
 
+const badRequest = (
+  message: string,
+  provider: ImageProviderId | "unknown" = "unknown"
+) => ({
+  status: 400,
+  provider,
+  code: "bad_request" as const,
+  message,
+});
+
 const validateRequest = (body: unknown): ImageProxyRequest => {
   if (!body || typeof body !== "object") {
-    throw new Error("Request body must be a JSON object.");
+    throw badRequest("Request body must be a JSON object.");
   }
 
   const candidate = body as Partial<ImageProxyRequest>;
   if (candidate.provider !== "gemini" && candidate.provider !== "openai") {
-    throw new Error("provider must be either 'gemini' or 'openai'.");
+    throw badRequest("provider must be either 'gemini' or 'openai'.");
   }
 
   if (!candidate.prompt || typeof candidate.prompt !== "string") {
-    throw new Error("prompt is required.");
+    throw badRequest("prompt is required.", candidate.provider);
   }
 
   if (!candidate.imageBase64 || typeof candidate.imageBase64 !== "string") {
-    throw new Error("imageBase64 is required.");
+    throw badRequest("imageBase64 is required.", candidate.provider);
   }
 
   if (!candidate.mimeType || typeof candidate.mimeType !== "string") {
-    throw new Error("mimeType is required.");
+    throw badRequest("mimeType is required.", candidate.provider);
   }
 
   return {
@@ -304,7 +314,13 @@ export default async function handler(req: any, res: any) {
   const startedAt = Date.now();
 
   try {
-    const body = await readJsonBody(req);
+    let body: unknown;
+    try {
+      body = await readJsonBody(req);
+    } catch {
+      throw badRequest("Request body must be valid JSON.");
+    }
+
     const request = validateRequest(body);
     provider = request.provider;
 
