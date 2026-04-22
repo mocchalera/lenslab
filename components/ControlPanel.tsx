@@ -28,21 +28,49 @@ interface ControlPanelProps {
   onGenerate: () => void;
 }
 
-// Data: Valid Lenses for each Camera Body
-const COMPATIBILITY_MAP: Record<CameraBody, LensModel[]> = {
-  [CameraBody.PENTAX_K1]: [LensModel.FA_77],
-  [CameraBody.LEICA_M11]: [LensModel.NOCTILUX_50],
-  [CameraBody.FUJIFILM_GFX100]: [LensModel.GF_110],
-  [CameraBody.SONY_A7RV]: [LensModel.GM_85],
-  [CameraBody.SMARTPHONE]: [] // Not used in this logic
-};
-
 // Data: Maximum Aperture (Brightest) for each Lens
 const LENS_SPECS: Record<LensModel, number> = {
   [LensModel.FA_77]: 1.8,
   [LensModel.NOCTILUX_50]: 0.95,
   [LensModel.GF_110]: 2.0,
   [LensModel.GM_85]: 1.4,
+  [LensModel.LEICA_SUMMILUX_35_1_4]: 1.4,
+  [LensModel.LEICA_SUMMICRON_50_2]: 2.0,
+  [LensModel.LEICA_APO_SUMMICRON_50_2]: 2.0,
+  [LensModel.ZEISS_OTUS_55_1_4]: 1.4,
+  [LensModel.ZEISS_PLANAR_50_1_4]: 1.4,
+  [LensModel.VOIGTLANDER_NOKTON_50_1]: 1.0,
+  [LensModel.CANON_50_1_2L]: 1.2,
+  [LensModel.CANON_85_1_2L]: 1.2,
+  [LensModel.NIKKOR_Z_58_0_95_NOCT]: 0.95,
+  [LensModel.NIKKOR_Z_50_1_2S]: 1.2,
+  [LensModel.NIKKOR_105_1_4E]: 1.4,
+  [LensModel.SONY_FE_50_1_2_GM]: 1.2,
+  [LensModel.SIGMA_35_1_2_ART]: 1.2,
+  [LensModel.PENTAX_FA_31_LIMITED]: 1.8,
+  [LensModel.PENTAX_FA_43_LIMITED]: 1.9,
+  [LensModel.PENTAX_DFA_50_1_4_STAR]: 1.4,
+  [LensModel.MINOLTA_ROKKOR_58_1_2]: 1.2,
+  [LensModel.HELIOS_44_2]: 2.0,
+  [LensModel.FUJIFILM_GF_80_1_7]: 1.7,
+};
+
+const ALL_PRIME_LENSES = Object.values(LensModel);
+
+// Data: Valid Lenses for each Camera Body
+const COMPATIBILITY_MAP: Record<CameraBody, LensModel[]> = {
+  [CameraBody.PENTAX_K1]: ALL_PRIME_LENSES,
+  [CameraBody.LEICA_M11]: ALL_PRIME_LENSES,
+  [CameraBody.LEICA_Q3]: ALL_PRIME_LENSES,
+  [CameraBody.HASSELBLAD_X2D]: ALL_PRIME_LENSES,
+  [CameraBody.PHASE_ONE_IQ4]: ALL_PRIME_LENSES,
+  [CameraBody.FUJIFILM_GFX100]: ALL_PRIME_LENSES,
+  [CameraBody.FUJIFILM_GFX100_II]: ALL_PRIME_LENSES,
+  [CameraBody.SONY_A7RV]: ALL_PRIME_LENSES,
+  [CameraBody.NIKON_Z8]: ALL_PRIME_LENSES,
+  [CameraBody.CANON_R5_II]: ALL_PRIME_LENSES,
+  [CameraBody.PENTAX_K1_II]: ALL_PRIME_LENSES,
+  [CameraBody.SMARTPHONE]: [] // Not used in this logic
 };
 
 const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProcessing, onGenerate }) => {

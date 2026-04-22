@@ -11,6 +11,83 @@ import {
   SimulationParams,
 } from "../types";
 
+const getCameraCharacteristics = (camera: CameraBody): string => {
+  switch (camera) {
+    case CameraBody.LEICA_M11:
+      return `
+        - SENSOR: 35mm full-frame BSI CMOS, 60MP class.
+        - COLOR SCIENCE: Leica color with dense reds, deep blacks, and crisp micro-contrast.
+        - TONALITY: Transparent highlights, strong local contrast, refined documentary realism.
+      `;
+    case CameraBody.LEICA_Q3:
+      return `
+        - SENSOR: 35mm full-frame Leica Q3 rendering.
+        - COLOR SCIENCE: Natural Leica palette with deep, elegant shadows.
+        - TONALITY: Clean highlight retention, rich shadow depth, understated saturation.
+      `;
+    case CameraBody.HASSELBLAD_X2D:
+      return `
+        - SENSOR: Medium format 100MP class.
+        - COLOR SCIENCE: Hasselblad Natural Color Solution (HNCS), creamy skin, gentle hue separation.
+        - TONALITY: Smooth gradation, calm highlights, premium editorial depth.
+      `;
+    case CameraBody.PHASE_ONE_IQ4:
+      return `
+        - SENSOR: Medium format 150MP class digital back.
+        - COLOR SCIENCE: Ultra-clean commercial advertising color, exact product-grade tonality.
+        - TONALITY: Maximum resolution, huge dynamic range, polished studio luxury.
+      `;
+    case CameraBody.FUJIFILM_GFX100:
+      return `
+        - SENSOR: Medium format 100MP class.
+        - COLOR SCIENCE: Fujifilm medium format color, smooth skin and film-like midtones.
+        - TONALITY: Large-sensor depth, gradual rolloff, quiet premium color separation.
+      `;
+    case CameraBody.FUJIFILM_GFX100_II:
+      return `
+        - SENSOR: Medium format 100MP class, GFX100 II generation.
+        - COLOR SCIENCE: Fujifilm film simulation color, refined greens, warm skin, elegant contrast.
+        - TONALITY: Clean detail with analog softness in color transitions.
+      `;
+    case CameraBody.SONY_A7RV:
+      return `
+        - SENSOR: 35mm full-frame high-resolution 61MP class.
+        - COLOR SCIENCE: Neutral Sony color with precise detail and controlled saturation.
+        - TONALITY: Fine texture, high acuity, modern editorial clarity.
+      `;
+    case CameraBody.NIKON_Z8:
+      return `
+        - SENSOR: 35mm full-frame stacked CMOS class.
+        - COLOR SCIENCE: Natural, faithful Nikon color with strong greens and believable skin.
+        - TONALITY: Reliable highlight behavior, documentary realism, balanced contrast.
+      `;
+    case CameraBody.CANON_R5_II:
+      return `
+        - SENSOR: 35mm full-frame Canon R5 Mark II generation.
+        - COLOR SCIENCE: Canon Picture Style color, flattering skin, gentle reds and warm highlights.
+        - TONALITY: Smooth faces, polished portrait contrast, refined commercial warmth.
+      `;
+    case CameraBody.PENTAX_K1_II:
+      return `
+        - SENSOR: 35mm full-frame Pentax K-1 Mark II generation.
+        - COLOR SCIENCE: Natural faithful Pentax color, rich local tones, grounded landscape palette.
+        - TONALITY: Organic contrast, nuanced greens, calm realism.
+      `;
+    case CameraBody.PENTAX_K1:
+      return `
+        - SENSOR: 35mm full-frame Pentax K-1 generation.
+        - COLOR SCIENCE: Natural Pentax color with warm greens and dense earth tones.
+        - TONALITY: Honest local contrast, restrained highlights, organic rendering.
+      `;
+    default:
+      return `
+        - SENSOR: Professional digital camera body.
+        - COLOR SCIENCE: Faithful professional color with balanced contrast.
+        - TONALITY: High dynamic range and natural skin reproduction.
+      `;
+  }
+};
+
 const getLensCharacteristics = (lens: LensModel): string => {
   switch (lens) {
     case LensModel.FA_77:
@@ -39,6 +116,139 @@ const getLensCharacteristics = (lens: LensModel): string => {
         - OPTICAL CHARACTER: "Modern Masterpiece". High contrast, high resolution from corner to corner.
         - BOKEH: Clean, circular bokeh balls with no onion rings (XA element simulation). Neutral and faithful.
         - CLARITY: Hyper-realistic, almost surgical sharpness but pleasing for portraits.
+      `;
+    case LensModel.LEICA_SUMMILUX_35_1_4:
+      return `
+        - OPTICAL CHARACTER: Leica reportage magic with intimate 35mm perspective and cinematic presence.
+        - BOKEH: Smooth but not sterile, with gentle field curvature and environmental context.
+        - COLOR: Dense Leica reds, rich blacks, warm skin, and high micro-contrast.
+        - ABERRATION: Subtle wide-open glow and slight edge softness that feels human, not clinical.
+      `;
+    case LensModel.LEICA_SUMMICRON_50_2:
+      return `
+        - OPTICAL CHARACTER: Classic normal-lens balance, honest, compact, and quietly elegant.
+        - BOKEH: Moderate separation with calm transitions and natural background shape.
+        - COLOR: Neutral Leica color, crisp midtones, and refined contrast without exaggeration.
+        - RESOLUTION: Strong central sharpness with tasteful falloff and documentary realism.
+      `;
+    case LensModel.LEICA_APO_SUMMICRON_50_2:
+      return `
+        - OPTICAL CHARACTER: APO precision and transparent Leica clarity, extremely controlled.
+        - BOKEH: Clean, refined blur with minimal color fringing and controlled specular edges.
+        - COLOR: Pure, neutral, high-fidelity color with exceptional tonal separation.
+        - RESOLUTION: Razor-sharp microdetail from wide open, apochromatic correction, no visible compromise.
+      `;
+    case LensModel.ZEISS_OTUS_55_1_4:
+      return `
+        - OPTICAL CHARACTER: Medium-format-like Zeiss perfection, massive contrast and sculptural volume.
+        - BOKEH: Dense, smooth blur with strong subject separation and almost 3D rendering.
+        - COLOR: Cool-neutral Zeiss color, strong blues, clean whites, and high global contrast.
+        - RESOLUTION: Extreme acuity wide open, high micro-contrast, clinically corrected detail.
+      `;
+    case LensModel.ZEISS_PLANAR_50_1_4:
+      return `
+        - OPTICAL CHARACTER: Vintage Zeiss Planar signature with classic normal-lens atmosphere.
+        - BOKEH: Slightly nervous wide open, painterly transitions, and lively background texture.
+        - COLOR: Warm-neutral Zeiss color with strong contrast and old-school saturation.
+        - ABERRATION: Visible spherical glow and chromatic hints wide open, sharpening when stopped down.
+      `;
+    case LensModel.VOIGTLANDER_NOKTON_50_1:
+      return `
+        - OPTICAL CHARACTER: Ultra-fast romantic normal lens with dramatic low-light depth.
+        - BOKEH: Huge, soft blur disks, fast falloff, and strong center isolation.
+        - COLOR: Slightly warm modern Voigtlander color with gentle contrast.
+        - ABERRATION: Wide-open glow, mild purple fringing, and dreamy spherical aberration.
+      `;
+    case LensModel.CANON_50_1_2L:
+      return `
+        - OPTICAL CHARACTER: Canon L-series dream normal, imperfect but emotional.
+        - BOKEH: Creamy foreground/background blur, large soft highlights, and shallow depth.
+        - COLOR: Warm Canon color with flattering skin and gentle reds.
+        - ABERRATION: Wide-open spherical glow and soft contrast that create a romantic portrait look.
+      `;
+    case LensModel.CANON_85_1_2L:
+      return `
+        - OPTICAL CHARACTER: Dream portrait lens with soft resolution and luxurious compression.
+        - BOKEH: Enormous, liquid blur with velvety transition and face-isolating depth.
+        - COLOR: Warm Canon skin tones, smooth reds, and polished highlight warmth.
+        - RESOLUTION: Soft but detailed wide open, prioritizing mood and depth over clinical bite.
+      `;
+    case LensModel.NIKKOR_Z_58_0_95_NOCT:
+      return `
+        - OPTICAL CHARACTER: Modern madness, nocturnal precision, and surreal dimensionality.
+        - BOKEH: Immense f/0.95 separation, huge luminous highlights, and impossible subject pop.
+        - COLOR: Neutral Nikon Z color with deep night tones and clear highlight control.
+        - RESOLUTION: Astonishing wide-open detail for f/0.95, with controlled coma and dramatic depth.
+      `;
+    case LensModel.NIKKOR_Z_50_1_2S:
+      return `
+        - OPTICAL CHARACTER: Modern Nikon high-speed normal with technical confidence.
+        - BOKEH: Smooth, clean blur with stable circular highlights and controlled transitions.
+        - COLOR: Natural Nikon color, faithful skin, and balanced contrast.
+        - RESOLUTION: High sharpness wide open, crisp eyelashes, controlled aberrations.
+      `;
+    case LensModel.NIKKOR_105_1_4E:
+      return `
+        - OPTICAL CHARACTER: Long portrait compression with elegant Nikon depth.
+        - BOKEH: Deep, creamy background melt with smooth telephoto compression.
+        - COLOR: Natural Nikon color, strong greens, and calm skin reproduction.
+        - RESOLUTION: High central sharpness with graceful falloff and low aberration.
+      `;
+    case LensModel.SONY_FE_50_1_2_GM:
+      return `
+        - OPTICAL CHARACTER: Modern GM speed and precision in a bright normal lens.
+        - BOKEH: Clean, round, polished blur with minimal onion rings and strong separation.
+        - COLOR: Neutral Sony color with accurate skin and controlled saturation.
+        - RESOLUTION: Very high wide-open sharpness, fast contrast, and low chromatic aberration.
+      `;
+    case LensModel.SIGMA_35_1_2_ART:
+      return `
+        - OPTICAL CHARACTER: Bold Art-series 35mm with cinematic sharpness and wide environmental depth.
+        - BOKEH: Strong separation for 35mm, large blur disks, and smooth background falloff.
+        - COLOR: Slightly warm Sigma Art color with high contrast and clean saturation.
+        - RESOLUTION: Excellent wide-open resolution, crisp subject detail, and controlled distortion.
+      `;
+    case LensModel.PENTAX_FA_31_LIMITED:
+      return `
+        - OPTICAL CHARACTER: "Pure Limited" rendering, poetic wide-normal perspective with soul.
+        - BOKEH: Gentle environmental blur, slightly classic transitions, and dimensional foreground.
+        - COLOR: Rich Pentax color, warm greens, dense reds, and natural local tones.
+        - ABERRATION: Subtle classic glow and imperfect edge behavior that adds atmosphere.
+      `;
+    case LensModel.PENTAX_FA_43_LIMITED:
+      return `
+        - OPTICAL CHARACTER: Legendary standard lens, natural perspective and tactile realism.
+        - BOKEH: Moderate, honest blur with lifelike transition and believable space.
+        - COLOR: Warm Pentax color, delicate skin, and film-like midtone density.
+        - RESOLUTION: Crisp enough but never harsh, prioritizing realism and texture.
+      `;
+    case LensModel.PENTAX_DFA_50_1_4_STAR:
+      return `
+        - OPTICAL CHARACTER: Pentax Star modern normal, high resolution with organic color.
+        - BOKEH: Smooth, rounded blur with strong f/1.4 isolation and calm speculars.
+        - COLOR: Deep Pentax greens, warm skin, and natural saturation.
+        - RESOLUTION: High wide-open resolution, low aberration, strong edge-to-edge control.
+      `;
+    case LensModel.MINOLTA_ROKKOR_58_1_2:
+      return `
+        - OPTICAL CHARACTER: Vintage Rokkor softness, amber nostalgia, and dreamy low-light personality.
+        - BOKEH: Soft swirling hints, broad blur disks, and glowing transitions.
+        - COLOR: Warm amber Minolta color with nostalgic contrast and gentle skin.
+        - ABERRATION: Pronounced wide-open glow, veiling flare, and classic spherical aberration.
+      `;
+    case LensModel.HELIOS_44_2:
+      return `
+        - OPTICAL CHARACTER: Original swirly-bokeh cult lens with vintage Soviet character.
+        - BOKEH: Strong spiral background swirl, cat-eye edges, and lively nervous highlights.
+        - COLOR: Muted vintage color, lower contrast, and earthy tones.
+        - ABERRATION: Visible field curvature, glow, flare, and imperfect edge behavior.
+      `;
+    case LensModel.FUJIFILM_GF_80_1_7:
+      return `
+        - OPTICAL CHARACTER: Medium format f/1.7 miracle lens with impossible background separation.
+        - BOKEH: Massive, creamy medium-format blur and slow graceful focus falloff.
+        - COLOR: Fujifilm GFX film color, smooth skin, soft greens, and refined saturation.
+        - RESOLUTION: High central detail with medium-format depth and beautifully controlled aberration.
       `;
     default:
       return "- OPTICAL CHARACTER: Standard professional prime lens rendering.";
@@ -359,6 +569,7 @@ const getOutputStylePrompt = (params: SimulationParams): string => {
 };
 
 export const buildSimulationPrompt = (params: SimulationParams): string => {
+  const cameraDetails = getCameraCharacteristics(params.camera);
   const lensDetails = getLensCharacteristics(params.lens);
   const lightingDetails = getLightingDescription(params.lighting);
   const exposureDetails = getExposureInstruction(params.exposure);
@@ -376,6 +587,7 @@ export const buildSimulationPrompt = (params: SimulationParams): string => {
     
     1. GEAR & PHYSICS (The most important part):
        - CAMERA BODY: ${params.camera} (Simulate sensor size and color science).
+       ${cameraDetails}
        - LENS MODEL: ${params.lens}.
        ${lensDetails}
        - APERTURE: ${params.aperture}.
