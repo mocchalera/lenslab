@@ -80,6 +80,88 @@ export enum OutputProfile {
   HIGH_CONTRAST = 'High Contrast B&W'
 }
 
+export const CAMERA_BODY_LABELS: Record<CameraBody, string> = {
+  [CameraBody.SMARTPHONE]: 'スマートフォン（入力画像）',
+  [CameraBody.PENTAX_K1]: 'Pentax K-1（フルサイズ）',
+  [CameraBody.LEICA_M11]: 'Leica M11',
+  [CameraBody.FUJIFILM_GFX100]: 'Fujifilm GFX 100S（中判）',
+  [CameraBody.SONY_A7RV]: 'Sony A7R V'
+};
+
+export const LENS_MODEL_LABELS: Record<LensModel, string> = {
+  [LensModel.FA_77]: 'PENTAX FA 77mm F1.8 Limited（柔らかい描写）',
+  [LensModel.NOCTILUX_50]: 'Leica Noctilux-M 50mm f/0.95（夢幻的）',
+  [LensModel.GF_110]: 'Fujinon GF 110mm f/2（中判ポートレート）',
+  [LensModel.GM_85]: 'Sony FE 85mm f/1.4 GM II（高解像）'
+};
+
+export const APERTURE_LABELS: Record<Aperture, string> = {
+  [Aperture.F0_95]: 'f/0.95',
+  [Aperture.F1_4]: 'f/1.4',
+  [Aperture.F1_8]: 'f/1.8',
+  [Aperture.F2_0]: 'f/2.0',
+  [Aperture.F2_8]: 'f/2.8',
+  [Aperture.F4_0]: 'f/4.0',
+  [Aperture.F8_0]: 'f/8.0'
+};
+
+export const EXPOSURE_COMPENSATION_LABELS: Record<ExposureCompensation, string> = {
+  [ExposureCompensation.NEG_1_0]: '-1.0 EV（暗め）',
+  [ExposureCompensation.NEG_0_5]: '-0.5 EV（やや暗め）',
+  [ExposureCompensation.ZERO]: '±0 EV（標準）',
+  [ExposureCompensation.POS_0_5]: '+0.5 EV（やや明るめ）',
+  [ExposureCompensation.POS_1_0]: '+1.0 EV（明るめ）'
+};
+
+export const LIGHTING_CONDITION_LABELS: Record<LightingCondition, string> = {
+  [LightingCondition.NATURAL_SOFT]: '自然光・柔らかい窓光',
+  [LightingCondition.GOLDEN_HOUR_BACKLIGHT]: '秋の15時・逆光と木漏れ日',
+  [LightingCondition.STUDIO_REMBRANDT]: 'スタジオ・レンブラント光',
+  [LightingCondition.CITY_NIGHT_BOKEH]: '夜の街・ネオンと玉ボケ',
+  [LightingCondition.CINEMATIC_TEAL_ORANGE]: 'シネマ調・ティール&オレンジ',
+  [LightingCondition.FASHION_FLASH_HARD]: '90年代エディトリアル・直射フラッシュ',
+  [LightingCondition.MOODY_OVERCAST]: '曇天・ブルーアワー',
+  [LightingCondition.PRISM_FLARE]: 'プリズム・光漏れ'
+};
+
+export const SCENE_CONTEXT_LABELS: Record<SceneContext, string> = {
+  [SceneContext.NAGANO_OMACHI]: '長野・大町（自然 / 北アルプス）',
+  [SceneContext.URBAN_STREET]: '都市の路地（東京 / 渋谷）',
+  [SceneContext.MINIMAL_STUDIO]: 'ミニマルスタジオ',
+  [SceneContext.VINTAGE_CAFE]: 'ヴィンテージカフェ',
+  [SceneContext.LUXURY_HOTEL_BAR]: '高級ホテルバー',
+  [SceneContext.ROOFTOP_DUSK]: '夕暮れのルーフトップ',
+  [SceneContext.OLD_LIBRARY]: '古い図書館',
+  [SceneContext.TROPICAL_BEACH]: 'トロピカルビーチ',
+  [SceneContext.RAINY_WINDOW]: '雨の日の窓辺'
+};
+
+export const CLOTHING_OPTION_LABELS: Record<ClothingOption, string> = {
+  [ClothingOption.ORIGINAL]: '元の服装を維持',
+  [ClothingOption.OUTDOOR_SHELL_TEAL]: 'アウトドアシェル（ティール）',
+  [ClothingOption.FORMAL_SHIRT]: '白いリネンシャツ',
+  [ClothingOption.TURTLENECK_WOOL]: '黒のカシミヤタートルネック',
+  [ClothingOption.LEATHER_JACKET]: 'ヴィンテージレザージャケット',
+  [ClothingOption.EVENING_GOWN_SILK]: 'フォーマルなイブニングウェア',
+  [ClothingOption.CYBERPUNK_TECHWEAR]: 'マットブラックのテックウェア',
+  [ClothingOption.VINTAGE_DENIM]: '90年代ウォッシュデニム'
+};
+
+export const POSE_OPTION_LABELS: Record<PoseOption, string> = {
+  [PoseOption.ORIGINAL]: '元のポーズを維持',
+  [PoseOption.FRONTAL_HEADSHOT]: '正面ヘッドショット',
+  [PoseOption.THREE_QUARTER]: '3/4クラシックポートレート',
+  [PoseOption.PROFILE]: '横顔プロフィール',
+  [PoseOption.LOOKING_OFF_CAMERA]: 'カメラ外を見る自然な表情',
+  [PoseOption.HAND_ON_CHIN]: '顎に手を添える'
+};
+
+export const OUTPUT_PROFILE_LABELS: Record<OutputProfile, string> = {
+  [OutputProfile.LOG_FLAT]: 'Log / Flat（グレーディング向け）',
+  [OutputProfile.STANDARD_FILM]: '標準フィルムシミュレーション',
+  [OutputProfile.HIGH_CONTRAST]: '高コントラスト白黒'
+};
+
 export interface SimulationParams {
   camera: CameraBody;
   lens: LensModel;

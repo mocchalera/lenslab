@@ -6,7 +6,7 @@ import ComparisonSlider from './components/ComparisonSlider';
 import PipelineViewer from './components/PipelineViewer';
 import HistoryPanel from './components/HistoryPanel';
 import { CameraBody, LensModel, Aperture, ExposureCompensation, LightingCondition, SceneContext, ClothingOption, PoseOption, OutputProfile, SimulationParams, ProcessingStep, HistoryItem } from './types';
-import { generateSimulationWithProvider, ImageProviderId } from './services/imageProvider';
+import { generateSimulationWithProvider, ImageProviderError, ImageProviderId } from './services/imageProvider';
 import { buildSimulationPrompt } from './services/simulationPrompt';
 
 const DEFAULT_PARAMS: SimulationParams = {
@@ -23,11 +23,39 @@ const DEFAULT_PARAMS: SimulationParams = {
 };
 
 const INITIAL_STEPS: ProcessingStep[] = [
-  { id: '1', label: 'Analyzing Structure & Depth Map', status: 'pending' },
-  { id: '2', label: 'FaceID & Composition Lock', status: 'pending' },
-  { id: '3', label: 'Applying Lens Optical Profile', status: 'pending' },
-  { id: '4', label: 'Sensor Color Science & Development', status: 'pending' },
+  { id: '1', label: '構造と奥行きを解析', status: 'pending' },
+  { id: '2', label: '顔と構図を固定', status: 'pending' },
+  { id: '3', label: 'レンズ描写を適用', status: 'pending' },
+  { id: '4', label: 'センサー色と現像を反映', status: 'pending' },
 ];
+
+const getJapaneseErrorMessage = (error: unknown): string => {
+  if (error instanceof ImageProviderError) {
+    const suffix = `（${error.code}）`;
+    switch (error.code) {
+      case 'missing_api_key':
+        return `サーバー側のAPIキー設定が不足しています。${suffix}`;
+      case 'bad_request':
+        return `画像生成リクエストの形式に問題があります。${suffix}`;
+      case 'auth':
+        return `プロバイダ認証または組織アクセスで失敗しました。${suffix}`;
+      case 'rate_limited':
+        return `画像生成のレート制限に達しました。少し待って再試行してください。${suffix}`;
+      case 'moderation':
+        return `安全ポリシーにより、この生成リクエストは処理できませんでした。${suffix}`;
+      case 'no_image':
+        return `プロバイダから画像が返りませんでした。${suffix}`;
+      case 'network':
+        return `画像生成プロキシへ接続できませんでした。${suffix}`;
+      case 'method_not_allowed':
+        return `画像生成APIの呼び出し方法が正しくありません。${suffix}`;
+      default:
+        return `画像生成に失敗しました。${suffix}`;
+    }
+  }
+
+  return '画像生成に失敗しました。設定を確認してもう一度お試しください。';
+};
 
 function App() {
   const [file, setFile] = useState<File | null>(null);
@@ -119,7 +147,7 @@ function App() {
 
     } catch (err: any) {
       console.error(err);
-      setError(err.message || "Simulation failed. Please try again.");
+      setError(getJapaneseErrorMessage(err));
       setSteps(prev => prev.map(s => s.status === 'active' ? { ...s, status: 'pending' } : s));
     } finally {
       setIsProcessing(false);
@@ -197,7 +225,7 @@ function App() {
       setPromptCopied(true);
       window.setTimeout(() => setPromptCopied(false), 1500);
     } catch (copyError) {
-      console.error("Failed to copy prompt:", copyError);
+      console.error("プロンプトのコピーに失敗しました:", copyError);
       setPromptCopied(false);
     }
   };
@@ -220,15 +248,15 @@ function App() {
           
           <div className="flex items-center gap-3">
             <label className="flex items-center gap-2 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
-              Provider
+              プロバイダ
               <select
                 value={providerId}
                 disabled={isProcessing}
                 onChange={(event) => setProviderId(event.target.value as ImageProviderId)}
                 className="bg-zinc-800 text-zinc-200 text-xs rounded border border-zinc-700 focus:ring-blue-500 focus:border-blue-500 px-2 py-1.5 normal-case tracking-normal"
               >
-                <option value="openai">OpenAI</option>
-                <option value="gemini">Gemini</option>
+                <option value="openai">OpenAI (gpt-image-2)</option>
+                <option value="gemini">Gemini (nano-banana)</option>
               </select>
             </label>
 
@@ -237,7 +265,7 @@ function App() {
                  onClick={handleReset}
                  className="text-xs font-medium text-zinc-400 hover:text-white transition-colors"
                >
-                 NEW PROJECT
+                 新規プロジェクト
                </button>
             )}
           </div>
@@ -255,8 +283,8 @@ function App() {
 
             {!file ? (
                 <div className="w-full max-w-xl">
-                <h2 className="text-2xl font-bold text-center mb-2">Import Source Image</h2>
-                <p className="text-zinc-500 text-center mb-8">Upload a smartphone photo to simulate professional optics.</p>
+                <h2 className="text-2xl font-bold text-center mb-2">元画像を読み込む</h2>
+                <p className="text-zinc-500 text-center mb-8">スマートフォン写真からプロ向けの光学描写をシミュレーションします。</p>
                 <FileUpload onFileSelect={handleFileSelect} />
                 </div>
             ) : (
@@ -270,7 +298,7 @@ function App() {
                     originalPreview && (
                     <img 
                         src={originalPreview} 
-                        alt="Original" 
+                        alt="元画像" 
                         className="w-full h-full object-contain"
                     />
                     )
@@ -296,20 +324,20 @@ function App() {
           <div className="flex-shrink-0 border-t border-zinc-800 bg-zinc-900/80 px-6 py-3">
             <details className="group">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-xs font-semibold uppercase tracking-wider text-zinc-400 transition-colors hover:text-zinc-200">
-                <span>Show Prompt</span>
+                <span>プロンプトを表示</span>
                 <span className="text-zinc-600 transition-transform group-open:rotate-180">⌄</span>
               </summary>
               <div className="mt-3 space-y-3">
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-xs text-zinc-500">
-                    Current parameters are converted into the final generation prompt below.
+                    現在の設定から生成に使う最終プロンプトを再構築しています。
                   </p>
                   <button
                     type="button"
                     onClick={handleCopyPrompt}
                     className="rounded border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-200 transition-colors hover:bg-zinc-700"
                   >
-                    {promptCopied ? 'Copied' : 'Copy'}
+                    {promptCopied ? 'コピーしました' : 'コピー'}
                   </button>
                 </div>
                 <pre className="max-h-72 overflow-auto whitespace-pre-wrap rounded border border-zinc-800 bg-zinc-950 p-4 text-xs leading-relaxed text-zinc-300">

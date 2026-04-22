@@ -1,5 +1,25 @@
-import React, { useEffect } from 'react';
-import { CameraBody, LensModel, Aperture, ExposureCompensation, LightingCondition, SceneContext, ClothingOption, PoseOption, OutputProfile, SimulationParams } from '../types';
+import React from 'react';
+import {
+  APERTURE_LABELS,
+  Aperture,
+  CAMERA_BODY_LABELS,
+  CLOTHING_OPTION_LABELS,
+  CameraBody,
+  ClothingOption,
+  EXPOSURE_COMPENSATION_LABELS,
+  ExposureCompensation,
+  LENS_MODEL_LABELS,
+  LensModel,
+  LIGHTING_CONDITION_LABELS,
+  LightingCondition,
+  OUTPUT_PROFILE_LABELS,
+  OutputProfile,
+  POSE_OPTION_LABELS,
+  PoseOption,
+  SCENE_CONTEXT_LABELS,
+  SceneContext,
+  SimulationParams,
+} from '../types';
 
 interface ControlPanelProps {
   params: SimulationParams;
@@ -83,15 +103,15 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
   return (
     <div className="w-full h-full flex flex-col bg-zinc-900 border-l border-zinc-800 p-6 overflow-y-auto">
       <div className="mb-6">
-        <h2 className="text-xl font-bold tracking-tight text-white mb-1">Optical Engine</h2>
-        <p className="text-xs text-zinc-500 uppercase tracking-wider">Portrait Simulator v2.1</p>
+        <h2 className="text-xl font-bold tracking-tight text-white mb-1">光学エンジン</h2>
+        <p className="text-xs text-zinc-500 uppercase tracking-wider">ポートレートシミュレーター v2.1</p>
       </div>
 
       <div className="space-y-5 flex-grow">
         
         {/* Output Profile */}
         <div className="space-y-1">
-          <label className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">Output Profile</label>
+          <label className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">出力プロファイル</label>
           <select
             value={params.outputProfile}
             disabled={isProcessing}
@@ -99,7 +119,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
             className="w-full bg-zinc-800 text-zinc-200 text-xs rounded border-zinc-700 focus:ring-blue-500 focus:border-blue-500 p-2"
           >
             {Object.values(OutputProfile).map((val) => (
-              <option key={val} value={val}>{val}</option>
+              <option key={val} value={val}>{OUTPUT_PROFILE_LABELS[val]}</option>
             ))}
           </select>
         </div>
@@ -109,7 +129,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
         {/* Gear Section */}
         <div className="space-y-4">
           <div className="space-y-1">
-            <label className="text-[10px] font-semibold text-zinc-500 uppercase">Camera System</label>
+            <label className="text-[10px] font-semibold text-zinc-500 uppercase">カメラシステム</label>
             <select
               value={params.camera}
               disabled={isProcessing}
@@ -119,13 +139,13 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
               {Object.values(CameraBody)
                 .filter(c => c !== CameraBody.SMARTPHONE) // Hide generic smartphone option for simulation target
                 .map((val) => (
-                <option key={val} value={val}>{val}</option>
+                <option key={val} value={val}>{CAMERA_BODY_LABELS[val]}</option>
               ))}
             </select>
           </div>
 
           <div className="space-y-1">
-            <label className="text-[10px] font-semibold text-zinc-500 uppercase">Lens</label>
+            <label className="text-[10px] font-semibold text-zinc-500 uppercase">レンズ</label>
             <select
               value={params.lens}
               disabled={isProcessing}
@@ -133,15 +153,15 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
               className="w-full bg-zinc-800 text-zinc-200 text-xs rounded border-zinc-700 focus:ring-blue-500 focus:border-blue-500 p-2"
             >
               {availableLenses.map((val) => (
-                <option key={val} value={val}>{val}</option>
+                <option key={val} value={val}>{LENS_MODEL_LABELS[val]}</option>
               ))}
             </select>
           </div>
 
           <div className="space-y-1">
             <div className="flex justify-between">
-                <label className="text-[10px] font-semibold text-zinc-500 uppercase">Aperture</label>
-                <span className="text-[10px] text-zinc-600">Max: f/{LENS_SPECS[params.lens]}</span>
+                <label className="text-[10px] font-semibold text-zinc-500 uppercase">絞り</label>
+                <span className="text-[10px] text-zinc-600">最大: f/{LENS_SPECS[params.lens]}</span>
             </div>
             
             <div className="grid grid-cols-4 gap-1">
@@ -163,7 +183,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
                             : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
                     }`}
                   >
-                    {val.replace('f/', '')}
+                    {APERTURE_LABELS[val].replace('f/', '')}
                   </button>
                 );
               })}
@@ -171,7 +191,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
           </div>
           
            <div className="space-y-1">
-            <label className="text-[10px] font-semibold text-zinc-500 uppercase">Exposure Compensation</label>
+            <label className="text-[10px] font-semibold text-zinc-500 uppercase">露出補正</label>
             <div className="grid grid-cols-5 gap-1">
               {Object.values(ExposureCompensation).map((val) => (
                 <button
@@ -184,7 +204,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
                       : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
                   }`}
                 >
-                  {val.replace(' EV', '').replace('POS_', '+').replace('NEG_', '-').replace('ZERO', '0')}
+                  {EXPOSURE_COMPENSATION_LABELS[val].split('（')[0]}
                 </button>
               ))}
             </div>
@@ -197,7 +217,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
         {/* Environment & Style */}
         <div className="space-y-4">
            <div className="space-y-1">
-            <label className="text-[10px] font-semibold text-zinc-500 uppercase">Lighting</label>
+            <label className="text-[10px] font-semibold text-zinc-500 uppercase">ライティング</label>
             <select
               value={params.lighting}
               disabled={isProcessing}
@@ -205,13 +225,13 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
               className="w-full bg-zinc-800 text-zinc-200 text-xs rounded border-zinc-700 focus:ring-blue-500 focus:border-blue-500 p-2"
             >
               {Object.values(LightingCondition).map((val) => (
-                <option key={val} value={val}>{val}</option>
+                <option key={val} value={val}>{LIGHTING_CONDITION_LABELS[val]}</option>
               ))}
             </select>
           </div>
 
           <div className="space-y-1">
-            <label className="text-[10px] font-semibold text-zinc-500 uppercase">Scene / Location</label>
+            <label className="text-[10px] font-semibold text-zinc-500 uppercase">シーン / ロケーション</label>
             <select
               value={params.scene}
               disabled={isProcessing}
@@ -219,13 +239,13 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
               className="w-full bg-zinc-800 text-zinc-200 text-xs rounded border-zinc-700 focus:ring-blue-500 focus:border-blue-500 p-2"
             >
               {Object.values(SceneContext).map((val) => (
-                <option key={val} value={val}>{val}</option>
+                <option key={val} value={val}>{SCENE_CONTEXT_LABELS[val]}</option>
               ))}
             </select>
           </div>
 
            <div className="space-y-1">
-            <label className="text-[10px] font-semibold text-zinc-500 uppercase">Subject Pose</label>
+            <label className="text-[10px] font-semibold text-zinc-500 uppercase">被写体のポーズ</label>
             <select
               value={params.pose}
               disabled={isProcessing}
@@ -233,13 +253,13 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
               className="w-full bg-zinc-800 text-zinc-200 text-xs rounded border-zinc-700 focus:ring-blue-500 focus:border-blue-500 p-2"
             >
               {Object.values(PoseOption).map((val) => (
-                <option key={val} value={val}>{val}</option>
+                <option key={val} value={val}>{POSE_OPTION_LABELS[val]}</option>
               ))}
             </select>
           </div>
 
           <div className="space-y-1">
-            <label className="text-[10px] font-semibold text-zinc-500 uppercase">Clothing / Styling</label>
+            <label className="text-[10px] font-semibold text-zinc-500 uppercase">服装 / スタイリング</label>
             <select
               value={params.clothing}
               disabled={isProcessing}
@@ -247,7 +267,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
               className="w-full bg-zinc-800 text-zinc-200 text-xs rounded border-zinc-700 focus:ring-blue-500 focus:border-blue-500 p-2"
             >
               {Object.values(ClothingOption).map((val) => (
-                <option key={val} value={val}>{val}</option>
+                <option key={val} value={val}>{CLOTHING_OPTION_LABELS[val]}</option>
               ))}
             </select>
           </div>
@@ -256,7 +276,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
         {/* Fidelity Slider */}
         <div className="space-y-2 pt-2">
            <div className="flex justify-between items-center">
-            <label className="text-[10px] font-semibold text-zinc-500 uppercase">Optical Fidelity</label>
+            <label className="text-[10px] font-semibold text-zinc-500 uppercase">光学再現度</label>
             <span className="text-[10px] text-zinc-400 font-mono">{params.fidelity}%</span>
            </div>
            <input 
@@ -281,7 +301,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
               : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-blue-900/20 hover:scale-[1.02]'
           }`}
         >
-          {isProcessing ? 'Developing...' : 'Simulate'}
+          {isProcessing ? '現像中...' : 'シミュレート'}
         </button>
       </div>
     </div>

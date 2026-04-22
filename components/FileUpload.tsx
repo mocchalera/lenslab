@@ -51,10 +51,10 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
           />
         </svg>
         <p className="mb-2 text-sm font-medium">
-          <span className="font-bold">Click to upload</span> or drag and drop
+          <span className="font-bold">クリックしてアップロード</span>、またはドラッグ&ドロップ
         </p>
         <p className="text-xs text-zinc-500">
-          HEIC, JPG, PNG (Max 10MB)
+          HEIC / JPG / PNG（最大10MB）
         </p>
       </div>
       <input
@@ -63,6 +63,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
         className="hidden"
         accept="image/*"
         onChange={handleChange}
+        aria-label="元画像を選択"
       />
     </label>
   );

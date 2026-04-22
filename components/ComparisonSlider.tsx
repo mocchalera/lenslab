@@ -51,11 +51,12 @@ const ComparisonSlider: React.FC<ComparisonSliderProps> = ({ beforeImage, afterI
       ref={containerRef}
       onMouseDown={onMouseDown}
       onTouchMove={handleDrag}
+      aria-label="元画像と生成結果の比較スライダー"
     >
       {/* Background Image (After) */}
       <img
         src={afterImage}
-        alt="After"
+        alt="生成結果"
         className="absolute inset-0 w-full h-full object-contain pointer-events-none"
       />
 
@@ -66,7 +67,7 @@ const ComparisonSlider: React.FC<ComparisonSliderProps> = ({ beforeImage, afterI
       >
         <img
           src={beforeImage}
-          alt="Before"
+          alt="元画像"
           className="absolute w-full h-full object-contain pointer-events-none"
           // Crucial: Use max-w-none and specific sizing to match the parent exactly despite clipping
           style={{ width: containerRef.current ? `${containerRef.current.clientWidth}px` : '100%', maxWidth: 'none', height: '100%' }}
@@ -87,10 +88,10 @@ const ComparisonSlider: React.FC<ComparisonSliderProps> = ({ beforeImage, afterI
       
       {/* Labels */}
       <div className="absolute top-4 left-4 bg-black/50 backdrop-blur px-2 py-1 rounded text-xs text-white font-bold tracking-wider pointer-events-none">
-        ORIGINAL
+        元画像
       </div>
       <div className="absolute top-4 right-4 bg-blue-600/50 backdrop-blur px-2 py-1 rounded text-xs text-white font-bold tracking-wider pointer-events-none">
-        SIMULATION
+        生成結果
       </div>
     </div>
   );
