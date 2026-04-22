@@ -55,6 +55,24 @@ const getLightingDescription = (lighting: LightingCondition): string => {
         - SHADOWS: Lifted with a reflector, soft but retaining shape.
         - HIGHLIGHTS: Rim light on hair and shoulders (haloing effect).
       `;
+    case LightingCondition.GOLDEN_HOUR_SEMI_BACKLIGHT:
+      return `
+        - TYPE: Golden Hour Semi-Backlight.
+        - TIME: 30 to 60 minutes before sunset.
+        - DIRECTION: Sun positioned about 30 degrees behind and to the side of the subject.
+        - QUALITY: Semi-backlight with both rim light and front catchlights visible.
+        - FLARE: Slightly strong lens flare with warm golden color cast.
+        - SKIN: Warm edge highlights, luminous cheeks, and gentle shadow rolloff.
+      `;
+    case LightingCondition.HIGH_NOON_SUMMER_SUN:
+      return `
+        - TYPE: High Noon Summer Sun.
+        - TIME: Around noon with solar altitude above 80 degrees.
+        - QUALITY: Maximum contrast, hard direct sunlight, clear blue sky.
+        - SHADOWS: Strong drop shadows under nose, chin, brow, and hair.
+        - SKIN: Visible sweat, specular skin shine, and crisp sunlit texture.
+        - MOOD: Hot, intense, summer clarity with saturated daylight color.
+      `;
     case LightingCondition.NATURAL_SOFT:
       return `
         - TYPE: Soft Window Light / Overcast Day.

@@ -34,6 +34,8 @@ export enum ExposureCompensation {
 export enum LightingCondition {
   NATURAL_SOFT = 'Natural Soft Light (Window)',
   GOLDEN_HOUR_BACKLIGHT = 'Autumn 3PM (Backlit/Komorebi)',
+  GOLDEN_HOUR_SEMI_BACKLIGHT = 'Golden Hour Semi-Backlight',
+  HIGH_NOON_SUMMER_SUN = 'High Noon Summer Sun',
   STUDIO_REMBRANDT = 'Studio Rembrandt (Dramatic)',
   CITY_NIGHT_BOKEH = 'City Night (Neon/Street)',
   CINEMATIC_TEAL_ORANGE = 'Cinematic (Teal & Orange)',
@@ -116,6 +118,8 @@ export const EXPOSURE_COMPENSATION_LABELS: Record<ExposureCompensation, string> 
 export const LIGHTING_CONDITION_LABELS: Record<LightingCondition, string> = {
   [LightingCondition.NATURAL_SOFT]: '自然光・柔らかい窓光',
   [LightingCondition.GOLDEN_HOUR_BACKLIGHT]: '秋の15時・逆光と木漏れ日',
+  [LightingCondition.GOLDEN_HOUR_SEMI_BACKLIGHT]: 'ゴールデンアワー（半逆光）',
+  [LightingCondition.HIGH_NOON_SUMMER_SUN]: '真夏の太陽',
   [LightingCondition.STUDIO_REMBRANDT]: 'スタジオ・レンブラント光',
   [LightingCondition.CITY_NIGHT_BOKEH]: '夜の街・ネオンと玉ボケ',
   [LightingCondition.CINEMATIC_TEAL_ORANGE]: 'シネマ調・ティール&オレンジ',
