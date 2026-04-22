@@ -1,4 +1,4 @@
-import { SimulationParams } from "../types";
+import { ImageAspect, ImageQuality, SimulationParams } from "../types";
 import { buildSimulationPrompt } from "./simulationPrompt";
 
 export type ImageProviderId = "gemini" | "openai";
@@ -12,14 +12,18 @@ export interface ImageUsage {
   totalTokens?: number;
 }
 
-export interface ImageGenerationRequest {
+export interface ImageProxyRequest {
   provider: ImageProviderId;
   prompt: string;
   imageBase64: string;
   mimeType: string;
   params?: SimulationParams;
   model?: OpenAIImageModel | string;
+  aspect?: ImageAspect;
+  quality?: ImageQuality;
 }
+
+export type ImageGenerationRequest = ImageProxyRequest;
 
 export interface ImageGenerationResult {
   dataUrl: string;
@@ -200,5 +204,7 @@ export const generateSimulationWithProvider = async (
     mimeType,
     params,
     model: provider === "openai" ? "gpt-image-2" : undefined,
+    aspect: params.aspect,
+    quality: params.quality,
   });
 };

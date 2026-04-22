@@ -13,6 +13,10 @@ import {
   CustomLocation,
   EXPOSURE_COMPENSATION_LABELS,
   ExposureCompensation,
+  IMAGE_ASPECT_LABELS,
+  IMAGE_QUALITY_LABELS,
+  ImageAspect,
+  ImageQuality,
   LENS_MODEL_LABELS,
   LENS_MOUNT_LABELS,
   LENS_MOUNT_MAP,
@@ -27,11 +31,13 @@ import {
   SceneContext,
   SimulationParams,
 } from '../types';
+import type { ImageProviderId } from '../services/imageProvider';
 import LocationPickerModal from './LocationPickerModal';
 
 interface ControlPanelProps {
   params: SimulationParams;
   setParams: React.Dispatch<React.SetStateAction<SimulationParams>>;
+  providerId: ImageProviderId;
   isProcessing: boolean;
   onGenerate: () => void;
 }
@@ -65,13 +71,14 @@ const LENS_SPECS: Record<LensModel, number> = {
   [LensModel.PHASE_ONE_BLUE_RING_80_2_8]: 2.8,
 };
 
-const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProcessing, onGenerate }) => {
+const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, providerId, isProcessing, onGenerate }) => {
   const currentClothingTheme =
     CLOTHING_THEMES.find((theme) => theme.items.includes(params.clothing))?.id ?? 'original';
   const [activeClothingTheme, setActiveClothingTheme] = React.useState<ClothingThemeId>(currentClothingTheme);
   const [isLocationPickerOpen, setIsLocationPickerOpen] = React.useState(false);
   const needsCustomLocation = params.scene === SceneContext.CUSTOM_MAP_LOCATION;
   const isCustomLocationMissing = needsCustomLocation && !params.customLocation;
+  const isGeminiProvider = providerId === 'gemini';
   const currentMount = CAMERA_MOUNT_MAP[params.camera];
   const availableLenses = React.useMemo(() => {
     return Object.values(LensModel).filter((lens) => LENS_MOUNT_MAP[lens].includes(currentMount));
@@ -167,6 +174,46 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, isProces
               <option key={val} value={val}>{OUTPUT_PROFILE_LABELS[val]}</option>
             ))}
           </select>
+        </div>
+
+        <div className="space-y-3">
+          <label className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">出力設定</label>
+
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <label className="text-[10px] font-semibold text-zinc-500 uppercase">アスペクト比</label>
+              <select
+                value={params.aspect}
+                disabled={isProcessing || isGeminiProvider}
+                onChange={(e) => updateParam('aspect', e.target.value as ImageAspect)}
+                className="w-full bg-zinc-800 text-zinc-200 text-xs rounded border-zinc-700 focus:ring-blue-500 focus:border-blue-500 p-2 disabled:text-zinc-500 disabled:opacity-70"
+              >
+                {Object.values(ImageAspect).map((val) => (
+                  <option key={val} value={val}>{IMAGE_ASPECT_LABELS[val]}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-semibold text-zinc-500 uppercase">品質</label>
+              <select
+                value={params.quality}
+                disabled={isProcessing || isGeminiProvider}
+                onChange={(e) => updateParam('quality', e.target.value as ImageQuality)}
+                className="w-full bg-zinc-800 text-zinc-200 text-xs rounded border-zinc-700 focus:ring-blue-500 focus:border-blue-500 p-2 disabled:text-zinc-500 disabled:opacity-70"
+              >
+                {Object.values(ImageQuality).map((val) => (
+                  <option key={val} value={val}>{IMAGE_QUALITY_LABELS[val]}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {isGeminiProvider && (
+            <p className="text-[10px] leading-relaxed text-zinc-500">
+              ※ Gemini では入力画像のアスペクト比・品質に準拠
+            </p>
+          )}
         </div>
 
         <hr className="border-zinc-800" />
