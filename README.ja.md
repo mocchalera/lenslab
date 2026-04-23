@@ -20,6 +20,7 @@ OpenAI gpt-image-2 または Gemini nano-banana 2（`gemini-3.1-flash-image-prev
 - 10 種類のライティングプリセット + 地図ベースのロケーション選択（Leaflet + OpenStreetMap）
 - 30 種類以上の服装をテーマ別タブで選べるワードローブ
 - OpenAI 向けのアスペクト比・品質コントロール
+- iPhone の HEIC/HEIF アップロードをクライアント側 JPEG 変換でサポート
 - 日英切替 UI
 - コピーとデバッグに使えるプロンプトインスペクター
 

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- iPhone HEIC/HEIF upload with client-side conversion to JPEG.
+
 ### Changed
 
 - Upgrade Gemini provider from Gemini 2.5 Flash Image (nano-banana) to `gemini-3.1-flash-image-preview` (nano-banana 2).

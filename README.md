@@ -20,6 +20,7 @@ A professional optical simulation app that transforms portraits through camera/l
 - 10 lighting presets + map-based location picker (Leaflet + OpenStreetMap)
 - Theme-tabbed wardrobe with 30+ outfits
 - Aspect ratio & quality controls for OpenAI
+- iPhone HEIC/HEIF upload with client-side conversion to JPEG
 - Bilingual UI (JA / EN toggle)
 - Prompt inspector with copy/debug
 
