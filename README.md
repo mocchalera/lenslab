@@ -1,116 +1,155 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
-
 # LensLab AI
 
-LensLab is a Vite + React 19 portrait simulation app. Image generation is routed through a Vercel Function so provider API keys never ship to browser JavaScript.
+![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6.svg)
+![Vite](https://img.shields.io/badge/Vite-6.x-646cff.svg)
+![Vercel](https://img.shields.io/badge/Vercel-ready-black.svg)
 
-## Architecture
+A professional optical simulation app that transforms portraits through camera/lens/lighting/scene/wardrobe controls using OpenAI gpt-image-2 or Gemini nano-banana.
 
-```text
-React UI
-  -> services/imageProvider.ts
-  -> POST /api/image
-  -> api/image.ts
-  -> OpenAI Images API or Gemini API
+> This project was originally scaffolded in Google AI Studio and now runs on a Vercel-proxied server architecture.
+
+[日本語 README](./README.ja.md)
+
+## Features
+
+- Dual provider: OpenAI gpt-image-2 + Gemini nano-banana switchable
+- Mount-accurate lens compatibility per camera body (Leica M / Sony E / Nikon Z / Canon RF / Pentax K / Fuji G / Hasselblad X / Phase One)
+- 10+ camera bodies including medium format (Hasselblad X2D, Phase One IQ4, Fujifilm GFX100 II)
+- 20+ legendary prime lenses (Noctilux, Summilux, Noct 58/0.95, Otus, Pentax Limited, etc.)
+- 10 lighting presets + map-based location picker (Leaflet + OpenStreetMap)
+- Theme-tabbed wardrobe with 30+ outfits
+- Aspect ratio & quality controls for OpenAI
+- Bilingual UI (JA / EN toggle)
+- Prompt inspector with copy/debug
+
+## Screenshots
+
+| Landing | Controls |
+| --- | --- |
+| ![LensLab landing screen](./docs/screenshots/01-landing.png) | ![LensLab controls panel](./docs/screenshots/02-controls.png) |
+
+| Wardrobe Tabs | Map Picker |
+| --- | --- |
+| ![LensLab wardrobe tabs](./docs/screenshots/03-wardrobe-tabs.png) | ![LensLab map picker](./docs/screenshots/04-map-picker.png) |
+
+Screenshots can be regenerated with:
+
+```bash
+npm run screenshots
 ```
 
-Supported providers:
+## One-Click Deploy
 
-- OpenAI: default provider, model `gpt-image-2`, using `POST /v1/images/edits`
-- Gemini: selectable fallback, model `gemini-2.5-flash-image`
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/mocchalera/lenslab&env=OPENAI_API_KEY,GEMINI_API_KEY)
 
-Both providers return a normalized response:
+## Quick Start
 
-```json
-{
-  "dataUrl": "data:image/png;base64,...",
-  "latencyMs": 1234,
-  "usage": {}
-}
+```bash
+git clone https://github.com/mocchalera/lenslab.git
+cd lenslab
+npm install
+cp .env.example .env.local
 ```
 
-## Environment Variables
-
-Create `.env.local` for local development, or configure the same variables in Vercel Project Settings.
+Add your provider keys to `.env.local`:
 
 ```env
 OPENAI_API_KEY=
 GEMINI_API_KEY=
+NOMINATIM_CONTACT_EMAIL=
 ```
 
-Do not expose these as `VITE_*` variables and do not inject them in `vite.config.ts`. The browser should only call `/api/image`.
-
-## Run Locally
-
-Prerequisites:
-
-- Node.js 24.x or another Vercel-supported Node.js version
-- Vercel CLI when testing the API proxy locally
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Run with the Vercel local runtime so `/api/image` is available:
+Run locally with the Vercel runtime so `/api/*` functions are available:
 
 ```bash
 npx vercel dev
 ```
 
-The Vite-only command is still useful for UI work, but image generation requires the Vercel Function:
+For UI-only work, Vite can also run without provider keys:
 
 ```bash
 npm run dev
 ```
 
-## Provider Switching
+## Environment Variables
 
-The header Provider selector controls which upstream service `/api/image` uses:
+| Variable | Required | Description |
+| --- | --- | --- |
+| `OPENAI_API_KEY` | Required for OpenAI | Server-side OpenAI API key used by `/api/image`. |
+| `GEMINI_API_KEY` | Required for Gemini | Server-side Gemini API key used by `/api/image`. |
+| `NOMINATIM_CONTACT_EMAIL` | Optional | Contact email included in the Nominatim User-Agent for `/api/geocode`. |
 
-- `OpenAI` is the default and uses `gpt-image-2`
-- `Gemini` keeps the existing Gemini image path available through the same server proxy
+Do not expose provider keys as `VITE_*` variables. Browser code calls only local API routes.
 
-The UI does not expose model or quality controls in this phase. OpenAI uses `output_format=png`, `quality=medium`, and `size=auto`.
+## Architecture
 
-## Deploy on Vercel
+```text
+Browser (React UI)
+  -> POST /api/image
+      -> Vercel Function
+          -> OpenAI Images API (gpt-image-2)
+          -> Gemini image API (nano-banana)
 
-1. Import the repository into Vercel.
-2. Set `OPENAI_API_KEY` and `GEMINI_API_KEY` in Project Settings -> Environment Variables.
-3. Deploy with the default Vite build command:
-
-```bash
-npm run build
+Browser (map picker)
+  -> GET /api/geocode?q=...
+      -> Vercel Function
+          -> Nominatim / OpenStreetMap
 ```
 
-`vercel.json` configures:
+`/api/image` normalizes provider responses into:
 
-- `api/image.ts` as the serverless image proxy with a 300 second maximum duration
-- SPA fallback routing to `index.html`
-- `/api/*` routing reserved for Vercel Functions
-
-## Verification
-
-Run:
-
-```bash
-npx tsc --noEmit
-npm run build
+```json
+{
+  "dataUrl": "data:image/png;base64,...",
+  "latencyMs": 1234,
+  "usage": {},
+  "debugPrompt": "..."
+}
 ```
 
-Manual smoke:
+## Prompt Engineering
 
-1. Start `npx vercel dev`.
-2. Upload a source image.
-3. Generate once with OpenAI.
-4. Switch Provider to Gemini and generate once.
-5. Confirm provider keys are only configured server-side.
+The UI is bilingual, but the final image prompt in `services/simulationPrompt.ts` intentionally stays in English. OpenAI and Gemini generally follow detailed photographic instructions more consistently when camera, lens, lighting, rendering, and wardrobe constraints are expressed in English.
 
-## Constraints
+## Cost and Safety Notes
 
-- Large uploads are sent as base64 JSON to `/api/image`; Vercel body limits may apply.
-- OpenAI and Gemini may interpret the same optical prompt differently.
-- Slow image edits depend on Vercel Function duration limits and upstream provider latency.
+API costs are your responsibility. No hosted demo is provided.
+
+- Keep API keys server-side in Vercel environment variables.
+- Large uploads are sent to `/api/image`; Vercel request size and function duration limits may apply.
+- OpenAI and Gemini can interpret the same optical prompt differently.
+- The map picker uses OpenStreetMap/Nominatim through `/api/geocode`; respect Nominatim usage limits.
+
+## Tech Stack
+
+- Vite + React 19 + TypeScript
+- Vercel Functions for server-side provider proxies
+- OpenAI Images API (`gpt-image-2`)
+- Google Gemini image generation
+- Leaflet + React Leaflet + OpenStreetMap
+- Playwright for screenshot capture
+
+## Roadmap
+
+- Expand the test framework described in `docs/testing/`
+- Add more scene presets and regional lighting profiles
+- Add provider-specific usage/cost previews
+- Improve screenshot automation for more viewports
+- Add richer prompt diffing and history export metadata
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+## License
+
+MIT. See [LICENSE](./LICENSE).
+
+## Credits
+
+- OpenAI
+- Google AI
+- Leaflet
+- OpenStreetMap contributors
+- Nominatim

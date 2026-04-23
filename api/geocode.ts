@@ -13,7 +13,8 @@ interface CacheEntry {
 type GeocodeErrorCode = "bad_request" | "method_not_allowed" | "rate_limited" | "upstream" | "unknown";
 
 const NOMINATIM_ENDPOINT = "https://nominatim.openstreetmap.org/search";
-const USER_AGENT = "LensLab/1.0 (contact@example.com)";
+const NOMINATIM_CONTACT_EMAIL = process.env.NOMINATIM_CONTACT_EMAIL || "contact@example.com";
+const USER_AGENT = `LensLab/1.0 (${NOMINATIM_CONTACT_EMAIL})`;
 const CACHE_TTL_MS = 60 * 60 * 1000;
 const CACHE_MAX_ITEMS = 100;
 
