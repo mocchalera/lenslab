@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Fixed
+
+## [0.1.1] - 2026-04-23
+
+### Added
+
 - iPhone HEIC/HEIF upload with client-side conversion to JPEG.
 
 ### Changed
