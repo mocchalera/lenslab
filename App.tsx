@@ -8,6 +8,8 @@ import HistoryPanel from './components/HistoryPanel';
 import { CameraBody, LensModel, Aperture, ExposureCompensation, LightingCondition, SceneContext, ClothingOption, PoseOption, OutputProfile, ImageAspect, ImageQuality, SimulationParams, ProcessingStep, HistoryItem } from './types';
 import { generateSimulationWithProvider, ImageProviderError, ImageProviderId } from './services/imageProvider';
 import { buildSimulationPrompt } from './services/simulationPrompt';
+import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
+import type { Language, StringKey } from './i18n/strings';
 
 const DEFAULT_PARAMS: SimulationParams = {
   camera: CameraBody.PENTAX_K1,
@@ -24,49 +26,59 @@ const DEFAULT_PARAMS: SimulationParams = {
   fidelity: 90
 };
 
-const INITIAL_STEPS: ProcessingStep[] = [
-  { id: '1', label: '構造と奥行きを解析', status: 'pending' },
-  { id: '2', label: '顔と構図を固定', status: 'pending' },
-  { id: '3', label: 'レンズ描写を適用', status: 'pending' },
-  { id: '4', label: 'センサー色と現像を反映', status: 'pending' },
+const STEP_LABEL_KEYS: Array<{ id: string; labelKey: StringKey }> = [
+  { id: '1', labelKey: 'pipelineAnalyze' },
+  { id: '2', labelKey: 'pipelineLock' },
+  { id: '3', labelKey: 'pipelineLens' },
+  { id: '4', labelKey: 'pipelineDevelop' },
 ];
 
-const getJapaneseErrorMessage = (error: unknown): string => {
+const makeInitialSteps = (t: (key: StringKey) => string): ProcessingStep[] => (
+  STEP_LABEL_KEYS.map((step) => ({
+    id: step.id,
+    label: t(step.labelKey),
+    status: 'pending',
+  }))
+);
+
+const getLocalizedErrorMessage = (error: unknown, t: (key: StringKey) => string, language: Language): string => {
   if (error instanceof ImageProviderError) {
-    const suffix = `（${error.code}）`;
+    const suffix = language === 'ja' ? `（${error.code}）` : ` (${error.code})`;
     switch (error.code) {
       case 'missing_api_key':
-        return `サーバー側のAPIキー設定が不足しています。${suffix}`;
+        return `${t('errorMissingApiKey')}${suffix}`;
       case 'bad_request':
-        return `画像生成リクエストの形式に問題があります。${suffix}`;
+        return `${t('errorBadRequest')}${suffix}`;
       case 'auth':
-        return `プロバイダ認証または組織アクセスで失敗しました。${suffix}`;
+        return `${t('errorAuth')}${suffix}`;
       case 'rate_limited':
-        return `画像生成のレート制限に達しました。少し待って再試行してください。${suffix}`;
+        return `${t('errorRateLimited')}${suffix}`;
       case 'moderation':
-        return `安全ポリシーにより、この生成リクエストは処理できませんでした。${suffix}`;
+        return `${t('errorModeration')}${suffix}`;
       case 'no_image':
-        return `プロバイダから画像が返りませんでした。${suffix}`;
+        return `${t('errorNoImage')}${suffix}`;
       case 'network':
-        return `画像生成プロキシへ接続できませんでした。${suffix}`;
+        return `${t('errorNetwork')}${suffix}`;
       case 'method_not_allowed':
-        return `画像生成APIの呼び出し方法が正しくありません。${suffix}`;
+        return `${t('errorMethodNotAllowed')}${suffix}`;
       default:
-        return `画像生成に失敗しました。${suffix}`;
+        return `${t('errorGeneric')}${suffix}`;
     }
   }
 
-  return '画像生成に失敗しました。設定を確認してもう一度お試しください。';
+  return t('errorFallback');
 };
 
-function App() {
+function AppContent() {
+  const { language, setLanguage, t } = useLanguage();
+  const initialSteps = useMemo(() => makeInitialSteps(t), [t]);
   const [file, setFile] = useState<File | null>(null);
   const [originalPreview, setOriginalPreview] = useState<string | null>(null);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [params, setParams] = useState<SimulationParams>(DEFAULT_PARAMS);
   const [providerId, setProviderId] = useState<ImageProviderId>('openai');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [steps, setSteps] = useState<ProcessingStep[]>(INITIAL_STEPS);
+  const [steps, setSteps] = useState<ProcessingStep[]>(initialSteps);
   const [error, setError] = useState<string | null>(null);
   const [promptCopied, setPromptCopied] = useState(false);
   
@@ -74,6 +86,13 @@ function App() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [currentHistoryId, setCurrentHistoryId] = useState<string | null>(null);
   const currentPrompt = useMemo(() => buildSimulationPrompt(params), [params]);
+
+  useEffect(() => {
+    setSteps(prev => initialSteps.map((step, index) => ({
+      ...step,
+      status: prev[index]?.status ?? step.status,
+    })));
+  }, [initialSteps]);
 
   // Handle file selection
   const handleFileSelect = (selectedFile: File) => {
@@ -100,7 +119,7 @@ function App() {
     if (!file) return;
 
     if (params.scene === SceneContext.CUSTOM_MAP_LOCATION && !params.customLocation) {
-      setError('地図からロケーションを選んでください。');
+      setError(t('errorLocationRequired'));
       return;
     }
 
@@ -109,7 +128,7 @@ function App() {
     setPromptCopied(false);
     
     // Reset pipeline UI
-    setSteps(INITIAL_STEPS.map(s => ({ ...s, status: 'pending' })));
+    setSteps(initialSteps.map(s => ({ ...s, status: 'pending' })));
 
     try {
       // Step 1: Analysis
@@ -156,7 +175,7 @@ function App() {
 
     } catch (err: any) {
       console.error(err);
-      setError(getJapaneseErrorMessage(err));
+      setError(getLocalizedErrorMessage(err, t, language));
       setSteps(prev => prev.map(s => s.status === 'active' ? { ...s, status: 'pending' } : s));
     } finally {
       setIsProcessing(false);
@@ -236,10 +255,12 @@ function App() {
       setPromptCopied(true);
       window.setTimeout(() => setPromptCopied(false), 1500);
     } catch (copyError) {
-      console.error("プロンプトのコピーに失敗しました:", copyError);
+      console.error(t('promptCopyFailed'), copyError);
       setPromptCopied(false);
     }
   };
+
+  const nextLanguage = language === 'ja' ? 'en' : 'ja';
 
   return (
     <div className="flex h-screen bg-zinc-950 text-white overflow-hidden">
@@ -259,7 +280,7 @@ function App() {
           
           <div className="flex items-center gap-3">
             <label className="flex items-center gap-2 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
-              プロバイダ
+              {t('provider')}
               <select
                 value={providerId}
                 disabled={isProcessing}
@@ -271,12 +292,21 @@ function App() {
               </select>
             </label>
 
+            <button
+              type="button"
+              onClick={() => setLanguage(nextLanguage)}
+              className="rounded border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-200 transition-colors hover:bg-zinc-700"
+              aria-label={t('language')}
+            >
+              {language === 'ja' ? t('languageSwitchToEnglish') : t('languageSwitchToJapanese')}
+            </button>
+
             {file && (
                <button 
                  onClick={handleReset}
                  className="text-xs font-medium text-zinc-400 hover:text-white transition-colors"
                >
-                 新規プロジェクト
+                 {t('newProject')}
                </button>
             )}
           </div>
@@ -294,8 +324,8 @@ function App() {
 
             {!file ? (
                 <div className="w-full max-w-xl">
-                <h2 className="text-2xl font-bold text-center mb-2">元画像を読み込む</h2>
-                <p className="text-zinc-500 text-center mb-8">スマートフォン写真からプロ向けの光学描写をシミュレーションします。</p>
+                <h2 className="text-2xl font-bold text-center mb-2">{t('uploadTitle')}</h2>
+                <p className="text-zinc-500 text-center mb-8">{t('uploadSubtitle')}</p>
                 <FileUpload onFileSelect={handleFileSelect} />
                 </div>
             ) : (
@@ -309,7 +339,7 @@ function App() {
                     originalPreview && (
                     <img 
                         src={originalPreview} 
-                        alt="元画像" 
+                        alt={t('sourceImageAlt')}
                         className="w-full h-full object-contain"
                     />
                     )
@@ -335,20 +365,20 @@ function App() {
           <div className="flex-shrink-0 border-t border-zinc-800 bg-zinc-900/80 px-6 py-3">
             <details className="group">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-xs font-semibold uppercase tracking-wider text-zinc-400 transition-colors hover:text-zinc-200">
-                <span>プロンプトを表示</span>
+                <span>{t('promptSummary')}</span>
                 <span className="text-zinc-600 transition-transform group-open:rotate-180">⌄</span>
               </summary>
               <div className="mt-3 space-y-3">
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-xs text-zinc-500">
-                    現在の設定から生成に使う最終プロンプトを再構築しています。
+                    {t('promptDescription')}
                   </p>
                   <button
                     type="button"
                     onClick={handleCopyPrompt}
                     className="rounded border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-200 transition-colors hover:bg-zinc-700"
                   >
-                    {promptCopied ? 'コピーしました' : 'コピー'}
+                    {promptCopied ? t('promptCopied') : t('promptCopy')}
                   </button>
                 </div>
                 <pre className="max-h-72 overflow-auto whitespace-pre-wrap rounded border border-zinc-800 bg-zinc-950 p-4 text-xs leading-relaxed text-zinc-300">
@@ -372,6 +402,14 @@ function App() {
         />
       </div>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
   );
 }
 

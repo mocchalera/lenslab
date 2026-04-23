@@ -1,37 +1,52 @@
 import React from 'react';
 import {
-  APERTURE_LABELS,
+  APERTURE_LABELS_EN,
+  APERTURE_LABELS_JA,
   Aperture,
-  CAMERA_BODY_LABELS,
+  CAMERA_BODY_LABELS_EN,
+  CAMERA_BODY_LABELS_JA,
   CAMERA_MOUNT_MAP,
   CLOTHING_OPTION_ICONS,
-  CLOTHING_OPTION_LABELS,
+  CLOTHING_OPTION_LABELS_EN,
+  CLOTHING_OPTION_LABELS_JA,
+  CLOTHING_THEME_LABELS_EN,
+  CLOTHING_THEME_LABELS_JA,
   CLOTHING_THEMES,
   ClothingThemeId,
   CameraBody,
   ClothingOption,
   CustomLocation,
-  EXPOSURE_COMPENSATION_LABELS,
+  EXPOSURE_COMPENSATION_LABELS_EN,
+  EXPOSURE_COMPENSATION_LABELS_JA,
   ExposureCompensation,
-  IMAGE_ASPECT_LABELS,
-  IMAGE_QUALITY_LABELS,
+  IMAGE_ASPECT_LABELS_EN,
+  IMAGE_ASPECT_LABELS_JA,
+  IMAGE_QUALITY_LABELS_EN,
+  IMAGE_QUALITY_LABELS_JA,
   ImageAspect,
   ImageQuality,
-  LENS_MODEL_LABELS,
-  LENS_MOUNT_LABELS,
+  LENS_MODEL_LABELS_EN,
+  LENS_MODEL_LABELS_JA,
+  LENS_MOUNT_LABELS_EN,
+  LENS_MOUNT_LABELS_JA,
   LENS_MOUNT_MAP,
   LensModel,
-  LIGHTING_CONDITION_LABELS,
+  LIGHTING_CONDITION_LABELS_EN,
+  LIGHTING_CONDITION_LABELS_JA,
   LightingCondition,
-  OUTPUT_PROFILE_LABELS,
+  OUTPUT_PROFILE_LABELS_EN,
+  OUTPUT_PROFILE_LABELS_JA,
   OutputProfile,
-  POSE_OPTION_LABELS,
+  POSE_OPTION_LABELS_EN,
+  POSE_OPTION_LABELS_JA,
   PoseOption,
-  SCENE_CONTEXT_LABELS,
+  SCENE_CONTEXT_LABELS_EN,
+  SCENE_CONTEXT_LABELS_JA,
   SceneContext,
   SimulationParams,
 } from '../types';
 import type { ImageProviderId } from '../services/imageProvider';
+import { useLanguage } from '../contexts/LanguageContext';
 import LocationPickerModal from './LocationPickerModal';
 
 interface ControlPanelProps {
@@ -72,6 +87,21 @@ const LENS_SPECS: Record<LensModel, number> = {
 };
 
 const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, providerId, isProcessing, onGenerate }) => {
+  const { language, t } = useLanguage();
+  const isJapanese = language === 'ja';
+  const apertureLabels = isJapanese ? APERTURE_LABELS_JA : APERTURE_LABELS_EN;
+  const cameraLabels = isJapanese ? CAMERA_BODY_LABELS_JA : CAMERA_BODY_LABELS_EN;
+  const clothingLabels = isJapanese ? CLOTHING_OPTION_LABELS_JA : CLOTHING_OPTION_LABELS_EN;
+  const clothingThemeLabels = isJapanese ? CLOTHING_THEME_LABELS_JA : CLOTHING_THEME_LABELS_EN;
+  const exposureLabels = isJapanese ? EXPOSURE_COMPENSATION_LABELS_JA : EXPOSURE_COMPENSATION_LABELS_EN;
+  const imageAspectLabels = isJapanese ? IMAGE_ASPECT_LABELS_JA : IMAGE_ASPECT_LABELS_EN;
+  const imageQualityLabels = isJapanese ? IMAGE_QUALITY_LABELS_JA : IMAGE_QUALITY_LABELS_EN;
+  const lensLabels = isJapanese ? LENS_MODEL_LABELS_JA : LENS_MODEL_LABELS_EN;
+  const lensMountLabels = isJapanese ? LENS_MOUNT_LABELS_JA : LENS_MOUNT_LABELS_EN;
+  const lightingLabels = isJapanese ? LIGHTING_CONDITION_LABELS_JA : LIGHTING_CONDITION_LABELS_EN;
+  const outputProfileLabels = isJapanese ? OUTPUT_PROFILE_LABELS_JA : OUTPUT_PROFILE_LABELS_EN;
+  const poseLabels = isJapanese ? POSE_OPTION_LABELS_JA : POSE_OPTION_LABELS_EN;
+  const sceneLabels = isJapanese ? SCENE_CONTEXT_LABELS_JA : SCENE_CONTEXT_LABELS_EN;
   const currentClothingTheme =
     CLOTHING_THEMES.find((theme) => theme.items.includes(params.clothing))?.id ?? 'original';
   const [activeClothingTheme, setActiveClothingTheme] = React.useState<ClothingThemeId>(currentClothingTheme);
@@ -155,15 +185,15 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, provider
   return (
     <div className="w-full h-full flex flex-col bg-zinc-900 border-l border-zinc-800 p-6 overflow-y-auto">
       <div className="mb-6">
-        <h2 className="text-xl font-bold tracking-tight text-white mb-1">光学エンジン</h2>
-        <p className="text-xs text-zinc-500 uppercase tracking-wider">ポートレートシミュレーター v2.1</p>
+        <h2 className="text-xl font-bold tracking-tight text-white mb-1">{t('controlTitle')}</h2>
+        <p className="text-xs text-zinc-500 uppercase tracking-wider">{t('controlVersion')}</p>
       </div>
 
       <div className="space-y-5 flex-grow">
         
         {/* Output Profile */}
         <div className="space-y-1">
-          <label className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">出力プロファイル</label>
+          <label className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">{t('outputProfile')}</label>
           <select
             value={params.outputProfile}
             disabled={isProcessing}
@@ -171,17 +201,17 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, provider
             className="w-full bg-zinc-800 text-zinc-200 text-xs rounded border-zinc-700 focus:ring-blue-500 focus:border-blue-500 p-2"
           >
             {Object.values(OutputProfile).map((val) => (
-              <option key={val} value={val}>{OUTPUT_PROFILE_LABELS[val]}</option>
+              <option key={val} value={val}>{outputProfileLabels[val]}</option>
             ))}
           </select>
         </div>
 
         <div className="space-y-3">
-          <label className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">出力設定</label>
+          <label className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">{t('outputSettings')}</label>
 
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
-              <label className="text-[10px] font-semibold text-zinc-500 uppercase">アスペクト比</label>
+              <label className="text-[10px] font-semibold text-zinc-500 uppercase">{t('aspectRatio')}</label>
               <select
                 value={params.aspect}
                 disabled={isProcessing || isGeminiProvider}
@@ -189,13 +219,13 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, provider
                 className="w-full bg-zinc-800 text-zinc-200 text-xs rounded border-zinc-700 focus:ring-blue-500 focus:border-blue-500 p-2 disabled:text-zinc-500 disabled:opacity-70"
               >
                 {Object.values(ImageAspect).map((val) => (
-                  <option key={val} value={val}>{IMAGE_ASPECT_LABELS[val]}</option>
+                  <option key={val} value={val}>{imageAspectLabels[val]}</option>
                 ))}
               </select>
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-semibold text-zinc-500 uppercase">品質</label>
+              <label className="text-[10px] font-semibold text-zinc-500 uppercase">{t('quality')}</label>
               <select
                 value={params.quality}
                 disabled={isProcessing || isGeminiProvider}
@@ -203,7 +233,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, provider
                 className="w-full bg-zinc-800 text-zinc-200 text-xs rounded border-zinc-700 focus:ring-blue-500 focus:border-blue-500 p-2 disabled:text-zinc-500 disabled:opacity-70"
               >
                 {Object.values(ImageQuality).map((val) => (
-                  <option key={val} value={val}>{IMAGE_QUALITY_LABELS[val]}</option>
+                  <option key={val} value={val}>{imageQualityLabels[val]}</option>
                 ))}
               </select>
             </div>
@@ -211,7 +241,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, provider
 
           {isGeminiProvider && (
             <p className="text-[10px] leading-relaxed text-zinc-500">
-              ※ Gemini では入力画像のアスペクト比・品質に準拠
+              {t('geminiAspectQualityNote')}
             </p>
           )}
         </div>
@@ -222,8 +252,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, provider
         <div className="space-y-4">
           <div className="space-y-1">
             <div className="flex items-center justify-between gap-3">
-              <label className="text-[10px] font-semibold text-zinc-500 uppercase">カメラシステム</label>
-              <span className="text-[10px] text-zinc-500">マウント: {LENS_MOUNT_LABELS[currentMount]}</span>
+              <label className="text-[10px] font-semibold text-zinc-500 uppercase">{t('cameraSystem')}</label>
+              <span className="text-[10px] text-zinc-500">{t('mount')}: {lensMountLabels[currentMount]}</span>
             </div>
             <select
               value={params.camera}
@@ -234,15 +264,15 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, provider
               {Object.values(CameraBody)
                 .filter(c => c !== CameraBody.SMARTPHONE) // Hide generic smartphone option for simulation target
                 .map((val) => (
-                <option key={val} value={val}>{CAMERA_BODY_LABELS[val]}</option>
+                <option key={val} value={val}>{cameraLabels[val]}</option>
               ))}
             </select>
           </div>
 
           <div className="space-y-1">
             <div className="flex items-center justify-between gap-3">
-              <label className="text-[10px] font-semibold text-zinc-500 uppercase">レンズ</label>
-              <span className="text-[10px] text-zinc-500">互換: {availableLenses.length}本</span>
+              <label className="text-[10px] font-semibold text-zinc-500 uppercase">{t('lens')}</label>
+              <span className="text-[10px] text-zinc-500">{t('compatible')}: {availableLenses.length}</span>
             </div>
             <select
               value={params.lens}
@@ -251,15 +281,15 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, provider
               className="w-full bg-zinc-800 text-zinc-200 text-xs rounded border-zinc-700 focus:ring-blue-500 focus:border-blue-500 p-2"
             >
               {availableLenses.map((val) => (
-                <option key={val} value={val}>{LENS_MODEL_LABELS[val]}</option>
+                <option key={val} value={val}>{lensLabels[val]}</option>
               ))}
             </select>
           </div>
 
           <div className="space-y-1">
             <div className="flex justify-between">
-                <label className="text-[10px] font-semibold text-zinc-500 uppercase">絞り</label>
-                <span className="text-[10px] text-zinc-600">最大: f/{LENS_SPECS[params.lens]}</span>
+                <label className="text-[10px] font-semibold text-zinc-500 uppercase">{t('aperture')}</label>
+                <span className="text-[10px] text-zinc-600">{t('maxAperture')}: f/{LENS_SPECS[params.lens]}</span>
             </div>
             
             <div className="grid grid-cols-4 gap-1">
@@ -281,7 +311,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, provider
                             : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
                     }`}
                   >
-                    {APERTURE_LABELS[val].replace('f/', '')}
+                    {apertureLabels[val].replace('f/', '')}
                   </button>
                 );
               })}
@@ -289,7 +319,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, provider
           </div>
           
            <div className="space-y-1">
-            <label className="text-[10px] font-semibold text-zinc-500 uppercase">露出補正</label>
+            <label className="text-[10px] font-semibold text-zinc-500 uppercase">{t('exposure')}</label>
             <div className="grid grid-cols-5 gap-1">
               {Object.values(ExposureCompensation).map((val) => (
                 <button
@@ -302,7 +332,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, provider
                       : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
                   }`}
                 >
-                  {EXPOSURE_COMPENSATION_LABELS[val].split('（')[0]}
+                  {exposureLabels[val].split(isJapanese ? '（' : ' (')[0]}
                 </button>
               ))}
             </div>
@@ -315,7 +345,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, provider
         {/* Environment & Style */}
         <div className="space-y-4">
            <div className="space-y-1">
-            <label className="text-[10px] font-semibold text-zinc-500 uppercase">ライティング</label>
+            <label className="text-[10px] font-semibold text-zinc-500 uppercase">{t('lighting')}</label>
             <select
               value={params.lighting}
               disabled={isProcessing}
@@ -323,13 +353,13 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, provider
               className="w-full bg-zinc-800 text-zinc-200 text-xs rounded border-zinc-700 focus:ring-blue-500 focus:border-blue-500 p-2"
             >
               {Object.values(LightingCondition).map((val) => (
-                <option key={val} value={val}>{LIGHTING_CONDITION_LABELS[val]}</option>
+                <option key={val} value={val}>{lightingLabels[val]}</option>
               ))}
             </select>
           </div>
 
           <div className="space-y-1">
-            <label className="text-[10px] font-semibold text-zinc-500 uppercase">シーン / ロケーション</label>
+            <label className="text-[10px] font-semibold text-zinc-500 uppercase">{t('sceneLocation')}</label>
             <select
               value={params.scene}
               disabled={isProcessing}
@@ -337,7 +367,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, provider
               className="w-full bg-zinc-800 text-zinc-200 text-xs rounded border-zinc-700 focus:ring-blue-500 focus:border-blue-500 p-2"
             >
               {Object.values(SceneContext).map((val) => (
-                <option key={val} value={val}>{SCENE_CONTEXT_LABELS[val]}</option>
+                <option key={val} value={val}>{sceneLabels[val]}</option>
               ))}
             </select>
             <div className="flex items-center justify-between gap-3">
@@ -347,7 +377,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, provider
                 onClick={() => setIsLocationPickerOpen(true)}
                 className="text-[10px] font-semibold text-blue-300 underline-offset-4 transition-colors hover:text-blue-200 hover:underline disabled:text-zinc-600 disabled:no-underline"
               >
-                または地図から選ぶ
+                {t('selectFromMap')}
               </button>
               {params.customLocation && (
                 <span className="truncate text-[10px] text-zinc-500" title={params.customLocation.placeName}>
@@ -362,13 +392,13 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, provider
             )}
             {isCustomLocationMissing && (
               <p className="rounded border border-amber-500/40 bg-amber-500/10 px-2 py-1.5 text-[10px] text-amber-200">
-                地図から場所を選んでください。
+                {t('selectLocationWarning')}
               </p>
             )}
           </div>
 
            <div className="space-y-1">
-            <label className="text-[10px] font-semibold text-zinc-500 uppercase">被写体のポーズ</label>
+            <label className="text-[10px] font-semibold text-zinc-500 uppercase">{t('pose')}</label>
             <select
               value={params.pose}
               disabled={isProcessing}
@@ -376,19 +406,19 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, provider
               className="w-full bg-zinc-800 text-zinc-200 text-xs rounded border-zinc-700 focus:ring-blue-500 focus:border-blue-500 p-2"
             >
               {Object.values(PoseOption).map((val) => (
-                <option key={val} value={val}>{POSE_OPTION_LABELS[val]}</option>
+                <option key={val} value={val}>{poseLabels[val]}</option>
               ))}
             </select>
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-[10px] font-semibold text-zinc-500 uppercase">服装 / スタイリング</label>
-              <span className="max-w-[150px] truncate text-[10px] text-blue-300">{CLOTHING_OPTION_LABELS[params.clothing]}</span>
+              <label className="text-[10px] font-semibold text-zinc-500 uppercase">{t('wardrobe')}</label>
+              <span className="max-w-[150px] truncate text-[10px] text-blue-300">{clothingLabels[params.clothing]}</span>
             </div>
 
             <div className="overflow-x-auto pb-1">
-              <div className="flex min-w-max gap-1" role="tablist" aria-label="服装テーマ">
+              <div className="flex min-w-max gap-1" role="tablist" aria-label={t('wardrobeThemesAria')}>
                 {CLOTHING_THEMES.map((theme) => {
                   const isActive = theme.id === activeClothingTheme;
 
@@ -406,14 +436,14 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, provider
                           : 'border-zinc-800 bg-zinc-950 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300'
                       }`}
                     >
-                      {theme.label}
+                      {clothingThemeLabels[theme.id]}
                     </button>
                   );
                 })}
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" role="radiogroup" aria-label="服装を選択">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" role="radiogroup" aria-label={t('wardrobePickerAria')}>
               {(CLOTHING_THEMES.find((theme) => theme.id === activeClothingTheme)?.items ?? []).map((item) => {
                 const isSelected = params.clothing === item;
 
@@ -439,7 +469,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, provider
                     <span className={`block text-[10px] font-medium leading-snug ${
                       isSelected ? 'text-blue-100' : 'text-zinc-300'
                     }`}>
-                      {CLOTHING_OPTION_LABELS[item]}
+                      {clothingLabels[item]}
                     </span>
                   </button>
                 );
@@ -451,7 +481,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, provider
         {/* Fidelity Slider */}
         <div className="space-y-2 pt-2">
            <div className="flex justify-between items-center">
-            <label className="text-[10px] font-semibold text-zinc-500 uppercase">光学再現度</label>
+            <label className="text-[10px] font-semibold text-zinc-500 uppercase">{t('fidelity')}</label>
             <span className="text-[10px] text-zinc-400 font-mono">{params.fidelity}%</span>
            </div>
            <input 
@@ -476,7 +506,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, provider
               : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-blue-900/20 hover:scale-[1.02]'
           }`}
         >
-          {isProcessing ? '現像中...' : isCustomLocationMissing ? '場所を選択してください' : 'シミュレート'}
+          {isProcessing ? t('developing') : isCustomLocationMissing ? t('selectLocationButton') : t('simulate')}
         </button>
       </div>
 

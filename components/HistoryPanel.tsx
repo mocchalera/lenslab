@@ -1,5 +1,6 @@
 import React from 'react';
-import { HistoryItem, LENS_MODEL_LABELS } from '../types';
+import { HistoryItem, LENS_MODEL_LABELS_EN, LENS_MODEL_LABELS_JA } from '../types';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface HistoryPanelProps {
   items: HistoryItem[];
@@ -16,6 +17,10 @@ const HistoryPanel: React.FC<HistoryPanelProps> = ({
   onDownloadOne, 
   onDownloadAll 
 }) => {
+  const { language, t } = useLanguage();
+  const lensLabels = language === 'ja' ? LENS_MODEL_LABELS_JA : LENS_MODEL_LABELS_EN;
+  const locale = language === 'ja' ? 'ja-JP' : 'en-US';
+
   if (items.length === 0) return null;
 
   return (
@@ -25,7 +30,7 @@ const HistoryPanel: React.FC<HistoryPanelProps> = ({
           <svg className="w-4 h-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
           </svg>
-          <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-wider">生成履歴</h3>
+          <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-wider">{t('historyTitle')}</h3>
           <span className="text-xs text-zinc-500">({items.length})</span>
         </div>
         
@@ -36,7 +41,7 @@ const HistoryPanel: React.FC<HistoryPanelProps> = ({
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
           </svg>
-          すべて保存（ZIP）
+          {t('historyDownloadAll')}
         </button>
       </div>
 
@@ -44,7 +49,7 @@ const HistoryPanel: React.FC<HistoryPanelProps> = ({
         {items.map((item) => {
           const isSelected = item.id === currentId;
           const date = new Date(item.timestamp);
-          const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+          const timeStr = date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
           return (
             <div 
@@ -59,7 +64,7 @@ const HistoryPanel: React.FC<HistoryPanelProps> = ({
               <div className="w-32 h-24 bg-zinc-950 rounded-lg overflow-hidden border border-zinc-800">
                 <img 
                   src={item.imageUrl} 
-                  alt={`${timeStr} の生成結果`} 
+                  alt={`${timeStr} ${t('historyImageAltSuffix')}`} 
                   className="w-full h-full object-cover" 
                 />
               </div>
@@ -68,7 +73,7 @@ const HistoryPanel: React.FC<HistoryPanelProps> = ({
               <div className="absolute inset-x-0 bottom-0 bg-black/60 backdrop-blur-sm p-1.5 flex justify-between items-end">
                 <div className="flex flex-col overflow-hidden">
                   <span className="text-[10px] text-zinc-300 font-mono truncate">{timeStr}</span>
-                  <span className="text-[9px] text-zinc-500 truncate">{LENS_MODEL_LABELS[item.params.lens]} {item.params.aperture}</span>
+                  <span className="text-[9px] text-zinc-500 truncate">{lensLabels[item.params.lens]} {item.params.aperture}</span>
                 </div>
               </div>
 
@@ -79,8 +84,8 @@ const HistoryPanel: React.FC<HistoryPanelProps> = ({
                   onDownloadOne(item);
                 }}
                 className="absolute top-1 right-1 p-1 bg-black/50 hover:bg-blue-600 text-white rounded opacity-0 group-hover:opacity-100 transition-all backdrop-blur-md"
-                title="画像をダウンロード"
-                aria-label="画像をダウンロード"
+                title={t('historyDownloadOne')}
+                aria-label={t('historyDownloadOne')}
               >
                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />

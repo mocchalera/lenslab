@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import L from 'leaflet';
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 import type { CustomLocation } from '../types';
+import { useLanguage } from '../contexts/LanguageContext';
+import type { StringKey } from '../i18n/strings';
 
 type LeafletComponentProps = React.PropsWithChildren<Record<string, unknown>>;
 
@@ -36,19 +38,18 @@ interface LocationPickerModalProps {
 
 interface MapClickHandlerProps {
   onPick: (location: CustomLocation) => void;
+  pickedPointLabel: string;
 }
 
 const DEFAULT_CENTER: [number, number] = [35.681236, 139.767125];
 const DEBOUNCE_MS = 400;
 const RESULT_LIST_ID = 'location-search-results';
-const MISSING_CONTACT_EMAIL_MESSAGE =
-  'サーバ側で NOMINATIM_CONTACT_EMAIL が設定されていません。Vercel の環境変数に実メールを追加してください';
 
-const MapClickHandler: React.FC<MapClickHandlerProps> = ({ onPick }) => {
+const MapClickHandler: React.FC<MapClickHandlerProps> = ({ onPick, pickedPointLabel }) => {
   useMapEvents({
     click(event) {
       onPick({
-        placeName: `地図で指定した地点 ${event.latlng.lat.toFixed(5)}, ${event.latlng.lng.toFixed(5)}`,
+        placeName: `${pickedPointLabel} ${event.latlng.lat.toFixed(5)}, ${event.latlng.lng.toFixed(5)}`,
         lat: event.latlng.lat,
         lng: event.latlng.lng,
       });
@@ -97,12 +98,12 @@ const MapInteractionSync: React.FC<{ scrollWheelZoom: boolean }> = ({ scrollWhee
   return null;
 };
 
-const getGeocodeErrorMessage = (payload: any): string => {
+const getGeocodeErrorMessage = (payload: any, t: (key: StringKey) => string): string => {
   if (payload?.error?.code === 'missing_contact_email') {
-    return MISSING_CONTACT_EMAIL_MESSAGE;
+    return t('mapMissingContactEmail');
   }
 
-  return payload?.error?.message || '場所検索に失敗しました。';
+  return payload?.error?.message || t('mapSearchFailed');
 };
 
 const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
@@ -111,6 +112,7 @@ const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
   onClear,
   onConfirm,
 }) => {
+  const { t } = useLanguage();
   const [query, setQuery] = useState(initialLocation?.placeName ?? '');
   const [results, setResults] = useState<GeocodeResult[]>([]);
   const [activeResultIndex, setActiveResultIndex] = useState(-1);
@@ -132,7 +134,7 @@ const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
       setResults([]);
       setActiveResultIndex(-1);
       if (showEmptyError) {
-        setError('検索する場所名または住所を入力してください。');
+        setError(t('mapEmptyQuery'));
       }
       return;
     }
@@ -150,7 +152,7 @@ const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
       const payload = await response.json().catch(() => null);
 
       if (!response.ok) {
-        throw new Error(getGeocodeErrorMessage(payload));
+        throw new Error(getGeocodeErrorMessage(payload, t));
       }
 
       if (requestRef.current !== controller) return;
@@ -159,19 +161,19 @@ const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
       setResults(nextResults);
       setActiveResultIndex(nextResults.length > 0 ? 0 : -1);
       if (nextResults.length === 0) {
-        setError('候補が見つかりませんでした。別の表記で検索してください。');
+        setError(t('mapNoResults'));
       }
     } catch (searchError: any) {
       if (searchError?.name === 'AbortError') return;
       setResults([]);
       setActiveResultIndex(-1);
-      setError(searchError.message || '場所検索に失敗しました。');
+      setError(searchError.message || t('mapSearchFailed'));
     } finally {
       if (requestRef.current === controller) {
         setIsSearching(false);
       }
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     const trimmedQuery = query.trim();
@@ -219,13 +221,11 @@ const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
   const handleMarkerDragEnd = (event: any) => {
     const marker = event.target as L.Marker;
     const nextLatLng = marker.getLatLng();
-    setDraftLocation((current) => ({
-      placeName:
-        current?.placeName ||
-        `地図で指定した地点 ${nextLatLng.lat.toFixed(5)}, ${nextLatLng.lng.toFixed(5)}`,
+    setDraftLocation({
+      placeName: `${t('mapPickedPoint')} ${nextLatLng.lat.toFixed(5)}, ${nextLatLng.lng.toFixed(5)}`,
       lat: nextLatLng.lat,
       lng: nextLatLng.lng,
-    }));
+    });
   };
 
   const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -277,19 +277,19 @@ const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
         <div className="flex items-center justify-between border-b border-zinc-800 px-5 py-4">
           <div>
             <h2 id="location-picker-title" className="text-base font-bold text-white">
-              地図からロケーションを選ぶ
+              {t('mapTitle')}
             </h2>
             <p className="mt-1 text-xs text-zinc-500">
-              検索候補・地図クリック・ピンのドラッグで撮影地を指定できます。
+              {t('mapDescription')}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
             className="rounded border border-zinc-700 px-3 py-1.5 text-xs text-zinc-300 transition-colors hover:bg-zinc-800"
-            aria-label="ロケーション選択を閉じる"
+            aria-label={t('mapCloseAria')}
           >
-            閉じる
+            {t('mapClose')}
           </button>
         </div>
 
@@ -297,7 +297,7 @@ const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
           <aside className="min-h-0 overflow-y-auto border-b border-zinc-800 p-4 md:border-b-0 md:border-r">
             <div className="space-y-3">
               <label htmlFor="location-search-input" className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
-                場所名 / 住所
+                {t('mapPlaceLabel')}
               </label>
               <div className="flex gap-2">
                 <input
@@ -305,7 +305,7 @@ const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
                   onKeyDown={handleSearchKeyDown}
-                  placeholder="例: 銀座, 大町市, Paris"
+                  placeholder={t('mapPlaceholder')}
                   role="combobox"
                   aria-controls={RESULT_LIST_ID}
                   aria-expanded={results.length > 0}
@@ -320,11 +320,11 @@ const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
                   disabled={isSearching}
                   className="rounded bg-blue-600 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-blue-500 disabled:bg-zinc-800 disabled:text-zinc-500"
                 >
-                  {isSearching ? '検索中' : '検索'}
+                  {isSearching ? t('mapSearching') : t('mapSearch')}
                 </button>
               </div>
               <p className="text-[10px] leading-relaxed text-zinc-600">
-                入力後 400ms で自動検索します。候補は ↑↓ と Enter でも選択できます。
+                {t('mapAutoSearchHint')}
               </p>
 
               {error && (
@@ -335,7 +335,7 @@ const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
 
               {draftLocation && (
                 <div className="rounded border border-blue-500/40 bg-blue-500/10 p-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-blue-300">選択中</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-blue-300">{t('mapSelected')}</p>
                   <p className="mt-1 line-clamp-3 text-xs text-zinc-100">{draftLocation.placeName}</p>
                   <p className="mt-2 font-mono text-[10px] text-zinc-500">
                     {draftLocation.lat.toFixed(6)}, {draftLocation.lng.toFixed(6)}
@@ -380,7 +380,7 @@ const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
             onFocus={() => setIsScrollWheelEnabled(true)}
           >
             <div className="pointer-events-none absolute right-3 top-3 z-[500] rounded bg-black/65 px-2 py-1 text-[10px] font-semibold text-zinc-200 backdrop-blur">
-              {isScrollWheelEnabled ? 'ホイールズーム有効' : '地図上でホイールズーム'}
+              {isScrollWheelEnabled ? t('mapScrollZoomOn') : t('mapScrollZoomHint')}
             </div>
             <LeafletMapContainer
               center={center}
@@ -398,7 +398,7 @@ const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              <MapClickHandler onPick={setDraftLocation} />
+              <MapClickHandler onPick={setDraftLocation} pickedPointLabel={t('mapPickedPoint')} />
               <MapViewSync location={draftLocation} />
               <MapInteractionSync scrollWheelZoom={isScrollWheelEnabled} />
               {draftLocation && (
@@ -418,7 +418,7 @@ const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
             onClick={onClear}
             className="rounded border border-zinc-700 px-4 py-2 text-xs font-semibold text-zinc-300 transition-colors hover:bg-zinc-800"
           >
-            クリアして閉じる
+            {t('mapClearClose')}
           </button>
           <button
             type="button"
@@ -426,7 +426,7 @@ const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
             onClick={() => draftLocation && onConfirm(draftLocation)}
             className="rounded bg-blue-600 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-blue-500 disabled:bg-zinc-800 disabled:text-zinc-500"
           >
-            確定してこの場所で生成
+            {t('mapConfirmLocation')}
           </button>
         </div>
       </div>

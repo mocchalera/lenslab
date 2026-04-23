@@ -172,7 +172,7 @@ export enum ImageQuality {
   HIGH = 'high'
 }
 
-export const CAMERA_BODY_LABELS: Record<CameraBody, string> = {
+export const CAMERA_BODY_LABELS_JA: Record<CameraBody, string> = {
   [CameraBody.SMARTPHONE]: 'スマートフォン（入力画像）',
   [CameraBody.PENTAX_K1]: 'Pentax K-1（フルサイズ）',
   [CameraBody.LEICA_M11]: 'ライカ M11（60MP / ライカ色）',
@@ -187,7 +187,7 @@ export const CAMERA_BODY_LABELS: Record<CameraBody, string> = {
   [CameraBody.PENTAX_K1_II]: 'ペンタックス K-1 Mark II（自然忠実）'
 };
 
-export const LENS_MODEL_LABELS: Record<LensModel, string> = {
+export const LENS_MODEL_LABELS_JA: Record<LensModel, string> = {
   [LensModel.FA_77]: 'PENTAX FA 77mm F1.8 Limited（柔らかい描写）',
   [LensModel.NOCTILUX_50]: 'Leica Noctilux-M 50mm f/0.95（夢幻的）',
   [LensModel.GF_110]: 'Fujinon GF 110mm f/2（中判ポートレート）',
@@ -215,7 +215,7 @@ export const LENS_MODEL_LABELS: Record<LensModel, string> = {
   [LensModel.PHASE_ONE_BLUE_RING_80_2_8]: 'フェーズワン ブルーリング 80mm f/2.8'
 };
 
-export const LENS_MOUNT_LABELS: Record<LensMount, string> = {
+export const LENS_MOUNT_LABELS_JA: Record<LensMount, string> = {
   [LensMount.LEICA_M]: 'ライカ M',
   [LensMount.SONY_E]: 'ソニー E',
   [LensMount.NIKON_Z]: 'ニコン Z',
@@ -276,7 +276,7 @@ export const LENS_MOUNT_MAP: Record<LensModel, LensMount[]> = {
   [LensModel.PHASE_ONE_BLUE_RING_80_2_8]: [LensMount.PHASE_ONE]
 };
 
-export const APERTURE_LABELS: Record<Aperture, string> = {
+export const APERTURE_LABELS_JA: Record<Aperture, string> = {
   [Aperture.F0_95]: 'f/0.95',
   [Aperture.F1_4]: 'f/1.4',
   [Aperture.F1_8]: 'f/1.8',
@@ -286,7 +286,7 @@ export const APERTURE_LABELS: Record<Aperture, string> = {
   [Aperture.F8_0]: 'f/8.0'
 };
 
-export const EXPOSURE_COMPENSATION_LABELS: Record<ExposureCompensation, string> = {
+export const EXPOSURE_COMPENSATION_LABELS_JA: Record<ExposureCompensation, string> = {
   [ExposureCompensation.NEG_1_0]: '-1.0 EV（暗め）',
   [ExposureCompensation.NEG_0_5]: '-0.5 EV（やや暗め）',
   [ExposureCompensation.ZERO]: '±0 EV（標準）',
@@ -294,7 +294,7 @@ export const EXPOSURE_COMPENSATION_LABELS: Record<ExposureCompensation, string> 
   [ExposureCompensation.POS_1_0]: '+1.0 EV（明るめ）'
 };
 
-export const LIGHTING_CONDITION_LABELS: Record<LightingCondition, string> = {
+export const LIGHTING_CONDITION_LABELS_JA: Record<LightingCondition, string> = {
   [LightingCondition.NATURAL_SOFT]: '自然光・柔らかい窓光',
   [LightingCondition.GOLDEN_HOUR_BACKLIGHT]: '秋の15時・逆光と木漏れ日',
   [LightingCondition.GOLDEN_HOUR_SEMI_BACKLIGHT]: 'ゴールデンアワー（半逆光）',
@@ -307,7 +307,7 @@ export const LIGHTING_CONDITION_LABELS: Record<LightingCondition, string> = {
   [LightingCondition.PRISM_FLARE]: 'プリズム・光漏れ'
 };
 
-export const SCENE_CONTEXT_LABELS: Record<SceneContext, string> = {
+export const SCENE_CONTEXT_LABELS_JA: Record<SceneContext, string> = {
   [SceneContext.NAGANO_OMACHI]: '長野・大町（自然 / 北アルプス）',
   [SceneContext.URBAN_STREET]: '都市の路地（東京 / 渋谷）',
   [SceneContext.MINIMAL_STUDIO]: 'ミニマルスタジオ',
@@ -320,7 +320,7 @@ export const SCENE_CONTEXT_LABELS: Record<SceneContext, string> = {
   [SceneContext.CUSTOM_MAP_LOCATION]: '地図で指定した場所'
 };
 
-export const CLOTHING_OPTION_LABELS: Record<ClothingOption, string> = {
+export const CLOTHING_OPTION_LABELS_JA: Record<ClothingOption, string> = {
   [ClothingOption.ORIGINAL]: '元の服装を維持',
   [ClothingOption.OUTDOOR_SHELL_TEAL]: 'アウトドアシェル（ティール）',
   [ClothingOption.FORMAL_SHIRT]: '白いリネンシャツ',
@@ -530,7 +530,7 @@ export const CLOTHING_THEMES: ClothingTheme[] = [
   }
 ];
 
-export const POSE_OPTION_LABELS: Record<PoseOption, string> = {
+export const POSE_OPTION_LABELS_JA: Record<PoseOption, string> = {
   [PoseOption.ORIGINAL]: '元のポーズを維持',
   [PoseOption.FRONTAL_HEADSHOT]: '正面ヘッドショット',
   [PoseOption.THREE_QUARTER]: '3/4クラシックポートレート',
@@ -539,25 +539,237 @@ export const POSE_OPTION_LABELS: Record<PoseOption, string> = {
   [PoseOption.HAND_ON_CHIN]: '顎に手を添える'
 };
 
-export const OUTPUT_PROFILE_LABELS: Record<OutputProfile, string> = {
+export const OUTPUT_PROFILE_LABELS_JA: Record<OutputProfile, string> = {
   [OutputProfile.LOG_FLAT]: 'Log / Flat（グレーディング向け）',
   [OutputProfile.STANDARD_FILM]: '標準フィルムシミュレーション',
   [OutputProfile.HIGH_CONTRAST]: '高コントラスト白黒'
 };
 
-export const IMAGE_ASPECT_LABELS: Record<ImageAspect, string> = {
+export const IMAGE_ASPECT_LABELS_JA: Record<ImageAspect, string> = {
   [ImageAspect.AUTO]: '自動',
   [ImageAspect.SQUARE]: '正方形 (1:1)',
   [ImageAspect.LANDSCAPE]: '横長 (3:2)',
   [ImageAspect.PORTRAIT]: '縦長 (2:3)'
 };
 
-export const IMAGE_QUALITY_LABELS: Record<ImageQuality, string> = {
+export const IMAGE_QUALITY_LABELS_JA: Record<ImageQuality, string> = {
   [ImageQuality.AUTO]: '自動',
   [ImageQuality.LOW]: 'Low (高速)',
   [ImageQuality.MEDIUM]: 'Medium (標準)',
   [ImageQuality.HIGH]: 'High (高精細・遅い)'
 };
+
+export const CAMERA_BODY_LABELS_EN: Record<CameraBody, string> = {
+  [CameraBody.SMARTPHONE]: 'Smartphone (source image)',
+  [CameraBody.PENTAX_K1]: 'Pentax K-1 (full frame)',
+  [CameraBody.LEICA_M11]: 'Leica M11 (60MP / Leica color)',
+  [CameraBody.LEICA_Q3]: 'Leica Q3 (natural deep shadows)',
+  [CameraBody.HASSELBLAD_X2D]: 'Hasselblad X2D 100C (HNCS)',
+  [CameraBody.PHASE_ONE_IQ4]: 'Phase One IQ4 150MP (commercial)',
+  [CameraBody.FUJIFILM_GFX100]: 'Fujifilm GFX 100S (medium format)',
+  [CameraBody.FUJIFILM_GFX100_II]: 'Fujifilm GFX100 II (film color)',
+  [CameraBody.SONY_A7RV]: 'Sony a7R V (detailed / neutral)',
+  [CameraBody.NIKON_Z8]: 'Nikon Z8 (natural fidelity)',
+  [CameraBody.CANON_R5_II]: 'Canon R5 II (Picture Style)',
+  [CameraBody.PENTAX_K1_II]: 'Pentax K-1 Mark II (natural fidelity)'
+};
+
+export const LENS_MODEL_LABELS_EN: Record<LensModel, string> = {
+  [LensModel.FA_77]: 'PENTAX FA 77mm F1.8 Limited (soft rendering)',
+  [LensModel.NOCTILUX_50]: 'Leica Noctilux-M 50mm f/0.95 (dreamlike)',
+  [LensModel.GF_110]: 'Fujinon GF 110mm f/2 (medium-format portrait)',
+  [LensModel.GM_85]: 'Sony FE 85mm f/1.4 GM II (high resolution)',
+  [LensModel.LEICA_SUMMILUX_35_1_4]: 'Leica Summilux-M 35mm f/1.4 ASPH',
+  [LensModel.LEICA_SUMMICRON_50_2]: 'Leica Summicron-M 50mm f/2',
+  [LensModel.LEICA_APO_SUMMICRON_50_2]: 'Leica APO-Summicron-M 50mm f/2 ASPH',
+  [LensModel.ZEISS_OTUS_55_1_4]: 'Zeiss Otus 55mm f/1.4',
+  [LensModel.ZEISS_PLANAR_50_1_4]: 'Zeiss Planar 50mm f/1.4',
+  [LensModel.VOIGTLANDER_NOKTON_50_1]: 'Voigtlander Nokton 50mm f/1',
+  [LensModel.CANON_50_1_2L]: 'Canon RF 50mm f/1.2L USM',
+  [LensModel.CANON_85_1_2L]: 'Canon RF 85mm f/1.2L USM',
+  [LensModel.NIKKOR_Z_58_0_95_NOCT]: 'Nikon NIKKOR Z 58mm f/0.95 S Noct',
+  [LensModel.NIKKOR_Z_50_1_2S]: 'Nikon NIKKOR Z 50mm f/1.2 S',
+  [LensModel.NIKKOR_105_1_4E]: 'Nikon AF-S NIKKOR 105mm f/1.4E ED',
+  [LensModel.SONY_FE_50_1_2_GM]: 'Sony FE 50mm f/1.2 GM',
+  [LensModel.SIGMA_35_1_2_ART]: 'Sigma 35mm f/1.2 DG DN Art',
+  [LensModel.PENTAX_FA_31_LIMITED]: 'PENTAX FA 31mm f/1.8 Limited (Pure Limited)',
+  [LensModel.PENTAX_FA_43_LIMITED]: 'PENTAX FA 43mm f/1.9 Limited (classic normal)',
+  [LensModel.PENTAX_DFA_50_1_4_STAR]: 'PENTAX DFA* 50mm f/1.4',
+  [LensModel.MINOLTA_ROKKOR_58_1_2]: 'Minolta MC Rokkor-PG 58mm f/1.2',
+  [LensModel.HELIOS_44_2]: 'Helios 44-2 58mm f/2',
+  [LensModel.FUJIFILM_GF_80_1_7]: 'Fujinon GF 80mm f/1.7 R WR',
+  [LensModel.HASSELBLAD_XCD_90V_2_5]: 'Hasselblad XCD 90mm f/2.5 V',
+  [LensModel.PHASE_ONE_BLUE_RING_80_2_8]: 'Phase One Blue Ring 80mm f/2.8'
+};
+
+export const LENS_MOUNT_LABELS_EN: Record<LensMount, string> = {
+  [LensMount.LEICA_M]: 'Leica M',
+  [LensMount.SONY_E]: 'Sony E',
+  [LensMount.NIKON_Z]: 'Nikon Z',
+  [LensMount.CANON_RF]: 'Canon RF',
+  [LensMount.PENTAX_K]: 'Pentax K',
+  [LensMount.FUJI_G]: 'Fujifilm G',
+  [LensMount.HASSELBLAD_X]: 'Hasselblad X',
+  [LensMount.PHASE_ONE]: 'Phase One'
+};
+
+export const APERTURE_LABELS_EN: Record<Aperture, string> = {
+  [Aperture.F0_95]: 'f/0.95',
+  [Aperture.F1_4]: 'f/1.4',
+  [Aperture.F1_8]: 'f/1.8',
+  [Aperture.F2_0]: 'f/2.0',
+  [Aperture.F2_8]: 'f/2.8',
+  [Aperture.F4_0]: 'f/4.0',
+  [Aperture.F8_0]: 'f/8.0'
+};
+
+export const EXPOSURE_COMPENSATION_LABELS_EN: Record<ExposureCompensation, string> = {
+  [ExposureCompensation.NEG_1_0]: '-1.0 EV (darker)',
+  [ExposureCompensation.NEG_0_5]: '-0.5 EV (slightly darker)',
+  [ExposureCompensation.ZERO]: '±0 EV (standard)',
+  [ExposureCompensation.POS_0_5]: '+0.5 EV (slightly brighter)',
+  [ExposureCompensation.POS_1_0]: '+1.0 EV (brighter)'
+};
+
+export const LIGHTING_CONDITION_LABELS_EN: Record<LightingCondition, string> = {
+  [LightingCondition.NATURAL_SOFT]: 'Natural soft window light',
+  [LightingCondition.GOLDEN_HOUR_BACKLIGHT]: 'Autumn 3PM backlight and komorebi',
+  [LightingCondition.GOLDEN_HOUR_SEMI_BACKLIGHT]: 'Golden hour semi-backlight',
+  [LightingCondition.HIGH_NOON_SUMMER_SUN]: 'High noon summer sun',
+  [LightingCondition.STUDIO_REMBRANDT]: 'Studio Rembrandt light',
+  [LightingCondition.CITY_NIGHT_BOKEH]: 'City night neon and bokeh',
+  [LightingCondition.CINEMATIC_TEAL_ORANGE]: 'Cinematic teal and orange',
+  [LightingCondition.FASHION_FLASH_HARD]: '90s editorial direct flash',
+  [LightingCondition.MOODY_OVERCAST]: 'Moody overcast blue hour',
+  [LightingCondition.PRISM_FLARE]: 'Prism flare and light leaks'
+};
+
+export const SCENE_CONTEXT_LABELS_EN: Record<SceneContext, string> = {
+  [SceneContext.NAGANO_OMACHI]: 'Nagano Omachi (nature / Northern Alps)',
+  [SceneContext.URBAN_STREET]: 'Urban street (Tokyo / Shibuya)',
+  [SceneContext.MINIMAL_STUDIO]: 'Minimal studio',
+  [SceneContext.VINTAGE_CAFE]: 'Vintage cafe',
+  [SceneContext.LUXURY_HOTEL_BAR]: 'Luxury hotel bar',
+  [SceneContext.ROOFTOP_DUSK]: 'Rooftop at dusk',
+  [SceneContext.OLD_LIBRARY]: 'Old library',
+  [SceneContext.TROPICAL_BEACH]: 'Tropical beach',
+  [SceneContext.RAINY_WINDOW]: 'Rainy window',
+  [SceneContext.CUSTOM_MAP_LOCATION]: 'Map-selected location'
+};
+
+export const CLOTHING_OPTION_LABELS_EN: Record<ClothingOption, string> = {
+  [ClothingOption.ORIGINAL]: 'Keep original clothing',
+  [ClothingOption.OUTDOOR_SHELL_TEAL]: 'Outdoor shell (teal)',
+  [ClothingOption.FORMAL_SHIRT]: 'White linen shirt',
+  [ClothingOption.TURTLENECK_WOOL]: 'Black cashmere turtleneck',
+  [ClothingOption.LEATHER_JACKET]: 'Vintage leather jacket',
+  [ClothingOption.EVENING_GOWN_SILK]: 'Formal eveningwear',
+  [ClothingOption.CYBERPUNK_TECHWEAR]: 'Matte black techwear',
+  [ClothingOption.VINTAGE_DENIM]: '90s washed denim',
+  [ClothingOption.T_SHIRT_WHITE]: 'White T-shirt',
+  [ClothingOption.OVERSIZED_HOODIE]: 'Oversized hoodie',
+  [ClothingOption.DENIM_ON_DENIM]: 'Denim on denim',
+  [ClothingOption.OXFORD_SHIRT]: 'Oxford shirt',
+  [ClothingOption.SWEATSHIRT_VINTAGE]: 'Vintage sweatshirt',
+  [ClothingOption.CARGO_PANTS_STYLE]: 'Cargo pants full style',
+  [ClothingOption.BLACK_SUIT_THREE_PIECE]: 'Black three-piece suit',
+  [ClothingOption.NAVY_SUIT_TAILORED]: 'Navy tailored suit',
+  [ClothingOption.CHANEL_TWEED]: 'Chanel-style tweed jacket',
+  [ClothingOption.PEARL_NECKLACE_DRESS]: 'Pearl necklace + dress',
+  [ClothingOption.TUXEDO_BLACK_TIE]: 'Black tie tuxedo',
+  [ClothingOption.MOUNTAIN_PARKA_GORE]: 'Gore-Tex mountain parka',
+  [ClothingOption.FLEECE_PATAGONIA]: 'Patagonia-style fleece',
+  [ClothingOption.DOWN_JACKET_PUFFY]: 'Puffy down jacket',
+  [ClothingOption.HIKING_GEAR_FULL]: 'Full hiking gear',
+  [ClothingOption.FISHERMAN_SWEATER]: 'Fisherman sweater',
+  [ClothingOption.YOHJI_BLACK_AVANT]: 'Yohji Yamamoto-style all black',
+  [ClothingOption.COMME_DES_GARCONS_DECONSTRUCTED]: 'Comme des Garcons-style deconstructed',
+  [ClothingOption.MONOCHROME_MINIMAL]: 'Black and white minimal',
+  [ClothingOption.ASYMMETRIC_ARCHITECTURAL]: 'Asymmetric architectural design',
+  [ClothingOption.STREETWEAR_SUPREME_STYLE]: 'Supreme-style streetwear',
+  [ClothingOption.OVERSIZED_GRAPHIC_TEE]: 'Oversized graphic tee',
+  [ClothingOption.SNEAKER_CULTURE_FULL]: 'Full sneaker culture fit',
+  [ClothingOption.BOMBER_JACKET_90S]: '90s bomber jacket',
+  [ClothingOption.KIMONO_CASUAL]: 'Casual kimono',
+  [ClothingOption.KIMONO_FORMAL]: 'Formal kimono',
+  [ClothingOption.JINBEI_SUMMER]: 'Summer jinbei',
+  [ClothingOption.YUKATA_FESTIVAL]: 'Festival yukata',
+  [ClothingOption.TRENCH_COAT_BURBERRY]: 'Trench coat',
+  [ClothingOption.CASHMERE_COAT_CAMEL]: 'Camel cashmere coat',
+  [ClothingOption.SUMMER_LINEN_WHITE]: 'White summer linen set',
+  [ClothingOption.KNITWEAR_OVERSIZED_CREAM]: 'Oversized cream knitwear',
+  [ClothingOption.DETECTIVE_NOIR]: 'Noir detective (hat + coat)',
+  [ClothingOption.ROCKSTAR_LEATHER_FULL]: 'Full rockstar leather',
+  [ClothingOption.VICTORIAN_GOTHIC]: 'Victorian gothic',
+  [ClothingOption.SPACE_AGE_FUTURISTIC]: 'Space age futuristic'
+};
+
+export const CLOTHING_THEME_LABELS_JA: Record<ClothingThemeId, string> = {
+  original: '原型維持',
+  casual: 'カジュアル',
+  formal: 'フォーマル・モード',
+  outdoor: 'アウトドア',
+  editorial: 'エディトリアル',
+  street: 'ストリート',
+  japanese: '和',
+  seasonal: '季節',
+  dramatic: 'ドラマチック'
+};
+
+export const CLOTHING_THEME_LABELS_EN: Record<ClothingThemeId, string> = {
+  original: 'Original',
+  casual: 'Casual',
+  formal: 'Formal / Mode',
+  outdoor: 'Outdoor',
+  editorial: 'Editorial',
+  street: 'Street',
+  japanese: 'Japanese',
+  seasonal: 'Seasonal',
+  dramatic: 'Dramatic'
+};
+
+export const POSE_OPTION_LABELS_EN: Record<PoseOption, string> = {
+  [PoseOption.ORIGINAL]: 'Keep original pose',
+  [PoseOption.FRONTAL_HEADSHOT]: 'Frontal headshot',
+  [PoseOption.THREE_QUARTER]: '3/4 classic portrait',
+  [PoseOption.PROFILE]: 'Side profile',
+  [PoseOption.LOOKING_OFF_CAMERA]: 'Looking off-camera candid',
+  [PoseOption.HAND_ON_CHIN]: 'Hand on chin'
+};
+
+export const OUTPUT_PROFILE_LABELS_EN: Record<OutputProfile, string> = {
+  [OutputProfile.LOG_FLAT]: 'Log / Flat (for grading)',
+  [OutputProfile.STANDARD_FILM]: 'Standard film simulation',
+  [OutputProfile.HIGH_CONTRAST]: 'High contrast black and white'
+};
+
+export const IMAGE_ASPECT_LABELS_EN: Record<ImageAspect, string> = {
+  [ImageAspect.AUTO]: 'Auto',
+  [ImageAspect.SQUARE]: 'Square (1:1)',
+  [ImageAspect.LANDSCAPE]: 'Landscape (3:2)',
+  [ImageAspect.PORTRAIT]: 'Portrait (2:3)'
+};
+
+export const IMAGE_QUALITY_LABELS_EN: Record<ImageQuality, string> = {
+  [ImageQuality.AUTO]: 'Auto',
+  [ImageQuality.LOW]: 'Low (fast)',
+  [ImageQuality.MEDIUM]: 'Medium (standard)',
+  [ImageQuality.HIGH]: 'High (detailed / slower)'
+};
+
+export const CAMERA_BODY_LABELS = CAMERA_BODY_LABELS_JA;
+export const LENS_MODEL_LABELS = LENS_MODEL_LABELS_JA;
+export const LENS_MOUNT_LABELS = LENS_MOUNT_LABELS_JA;
+export const APERTURE_LABELS = APERTURE_LABELS_JA;
+export const EXPOSURE_COMPENSATION_LABELS = EXPOSURE_COMPENSATION_LABELS_JA;
+export const LIGHTING_CONDITION_LABELS = LIGHTING_CONDITION_LABELS_JA;
+export const SCENE_CONTEXT_LABELS = SCENE_CONTEXT_LABELS_JA;
+export const CLOTHING_OPTION_LABELS = CLOTHING_OPTION_LABELS_JA;
+export const CLOTHING_THEME_LABELS = CLOTHING_THEME_LABELS_JA;
+export const POSE_OPTION_LABELS = POSE_OPTION_LABELS_JA;
+export const OUTPUT_PROFILE_LABELS = OUTPUT_PROFILE_LABELS_JA;
+export const IMAGE_ASPECT_LABELS = IMAGE_ASPECT_LABELS_JA;
+export const IMAGE_QUALITY_LABELS = IMAGE_QUALITY_LABELS_JA;
 
 export interface SimulationParams {
   camera: CameraBody;
