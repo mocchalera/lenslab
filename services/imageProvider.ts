@@ -43,6 +43,7 @@ export type ImageProviderErrorCode =
   | "no_image"
   | "network"
   | "method_not_allowed"
+  | "upstream"
   | "unknown";
 
 export interface ImageProviderErrorPayload {
@@ -89,6 +90,7 @@ const errorCodeForStatus = (status: number): ImageProviderErrorCode => {
   if (status === 401 || status === 403) return "auth";
   if (status === 405) return "method_not_allowed";
   if (status === 429) return "rate_limited";
+  if (status >= 500) return "upstream";
   return "unknown";
 };
 

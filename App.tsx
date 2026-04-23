@@ -61,6 +61,8 @@ const getLocalizedErrorMessage = (error: unknown, t: (key: StringKey) => string,
         return `${t('errorNetwork')}${suffix}`;
       case 'method_not_allowed':
         return `${t('errorMethodNotAllowed')}${suffix}`;
+      case 'upstream':
+        return `${t('errorUpstream')}${suffix}`;
       default:
         return `${t('errorGeneric')}${suffix}`;
     }

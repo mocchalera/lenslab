@@ -1,4 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
+import { randomUUID } from "node:crypto";
 
 type ImageProviderId = "gemini" | "openai";
 type ImageAspect = "auto" | "1024x1024" | "1536x1024" | "1024x1536";
@@ -13,6 +14,7 @@ type ImageProviderErrorCode =
   | "no_image"
   | "network"
   | "method_not_allowed"
+  | "upstream"
   | "unknown";
 
 interface ImageProxyRequest {
@@ -57,10 +59,22 @@ interface OpenAIImagesResponse {
   };
 }
 
+interface OpenAIErrorResponse {
+  error?: {
+    message?: string;
+    type?: string;
+    code?: string | null;
+    param?: string | null;
+  };
+}
+
 const OPENAI_MODEL = "gpt-image-2";
 const GEMINI_MODEL = "gemini-3.1-flash-image-preview";
 const IMAGE_ASPECT_VALUES = ["auto", "1024x1024", "1536x1024", "1024x1536"] as const;
 const IMAGE_QUALITY_VALUES = ["auto", "low", "medium", "high"] as const;
+const OPENAI_SUPPORTED_INPUT_MIME_TYPES = ["image/png", "image/jpeg", "image/webp"] as const;
+const OPENAI_MAX_ATTEMPTS = 2;
+const OPENAI_RETRY_BASE_DELAY_MS = 1000;
 let didLogGeminiAspectQualityWarning = false;
 
 const sendJson = (res: any, status: number, payload: unknown) => {
@@ -175,13 +189,16 @@ const errorCodeForStatus = (status: number): ImageProviderErrorCode => {
   if (status === 400) return "bad_request";
   if (status === 401 || status === 403) return "auth";
   if (status === 429) return "rate_limited";
+  if (status >= 500) return "upstream";
   return "unknown";
 };
 
 const messageForOpenAIError = (status: number, fallback?: string): string => {
   if (status === 400) return fallback || "OpenAI rejected the image generation request.";
-  if (status === 401 || status === 403) return "OpenAI authentication or organization access failed.";
+  if (status === 401) return "OpenAI authentication failed. Check OPENAI_API_KEY.";
+  if (status === 403) return "OpenAI organization or project access failed. Confirm GPT Image access and organization verification.";
   if (status === 429) return "OpenAI image generation is rate limited. Please try again later.";
+  if (status >= 500) return "OpenAI upstream server error. Please retry; check function logs for the OpenAI request ID.";
   return fallback || "OpenAI image generation failed.";
 };
 
@@ -201,6 +218,72 @@ const modelForProvider = (provider: ImageProviderId): string => {
   return provider === "openai" ? OPENAI_MODEL : GEMINI_MODEL;
 };
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const isRetryableOpenAIStatus = (status: number): boolean => {
+  return status === 408 || status === 500 || status === 502 || status === 503 || status === 504;
+};
+
+const filenameForMimeType = (mimeType: string): string => {
+  switch (mimeType) {
+    case "image/jpeg":
+      return "source-image.jpg";
+    case "image/webp":
+      return "source-image.webp";
+    case "image/png":
+    default:
+      return "source-image.png";
+  }
+};
+
+const validateOpenAIInputImage = (request: ImageProxyRequest) => {
+  if (!OPENAI_SUPPORTED_INPUT_MIME_TYPES.includes(request.mimeType as any)) {
+    throw {
+      status: 400,
+      provider: "openai",
+      code: "bad_request",
+      message:
+        "OpenAI image edits support PNG, JPEG, or WebP input images. Convert the source image and try again.",
+    };
+  }
+};
+
+const readOpenAIResponse = async (
+  response: Response
+): Promise<{ payload: OpenAIImagesResponse & OpenAIErrorResponse; rawText: string }> => {
+  const rawText = await response.text();
+  if (!rawText) {
+    return { payload: {}, rawText: "" };
+  }
+
+  try {
+    return {
+      payload: JSON.parse(rawText) as OpenAIImagesResponse & OpenAIErrorResponse,
+      rawText,
+    };
+  } catch {
+    return { payload: {}, rawText };
+  }
+};
+
+const getOpenAIErrorFields = (payload: OpenAIErrorResponse, rawText: string) => {
+  const upstreamMessage =
+    typeof payload?.error?.message === "string" ? payload.error.message : undefined;
+  const upstreamType =
+    typeof payload?.error?.type === "string" ? payload.error.type : undefined;
+  const upstreamCode =
+    typeof payload?.error?.code === "string" ? payload.error.code : undefined;
+  const upstreamParam =
+    typeof payload?.error?.param === "string" ? payload.error.param : undefined;
+
+  return {
+    message: upstreamMessage || rawText.slice(0, 500) || undefined,
+    type: upstreamType,
+    code: upstreamCode,
+    param: upstreamParam,
+  };
+};
+
 const generateWithOpenAI = async (request: ImageProxyRequest): Promise<ImageProxyResult> => {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
@@ -212,49 +295,130 @@ const generateWithOpenAI = async (request: ImageProxyRequest): Promise<ImageProx
     };
   }
 
+  validateOpenAIInputImage(request);
+
   const imageBytes = Buffer.from(request.imageBase64, "base64");
   const imageBlob = new Blob([imageBytes], { type: request.mimeType });
   const form = new FormData();
   form.append("model", OPENAI_MODEL);
-  form.append("image[]", imageBlob, "source-image");
+  form.append("image[]", imageBlob, filenameForMimeType(request.mimeType));
   form.append("prompt", request.prompt);
   form.append("output_format", "png");
   form.append("quality", request.quality);
   form.append("size", request.aspect);
 
-  const response = await fetch("https://api.openai.com/v1/images/edits", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: form,
-  });
+  const clientRequestId = `lenslab-${randomUUID()}`;
+  let response: Response | undefined;
+  let payload: OpenAIImagesResponse & OpenAIErrorResponse = {};
+  let rawText = "";
 
-  const responseJson = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const upstreamMessage =
-      typeof responseJson?.error?.message === "string" ? responseJson.error.message : undefined;
-    const upstreamCode =
-      typeof responseJson?.error?.code === "string" ? responseJson.error.code : "";
-    const isModeration = upstreamCode.includes("moderation") || upstreamCode.includes("content");
+  for (let attempt = 1; attempt <= OPENAI_MAX_ATTEMPTS; attempt += 1) {
+    try {
+      response = await fetch("https://api.openai.com/v1/images/edits", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "X-Client-Request-Id": clientRequestId,
+        },
+        body: form,
+      });
+    } catch (error) {
+      console.error("[image-proxy] openai fetch failed:", {
+        model: OPENAI_MODEL,
+        attempt,
+        maxAttempts: OPENAI_MAX_ATTEMPTS,
+        clientRequestId,
+        message: error instanceof Error ? error.message : String(error),
+      });
 
-    throw {
+      if (attempt < OPENAI_MAX_ATTEMPTS) {
+        await sleep(OPENAI_RETRY_BASE_DELAY_MS * attempt);
+        continue;
+      }
+
+      throw {
+        status: 502,
+        provider: "openai",
+        code: "upstream",
+        message: "OpenAI image generation request failed before a response was received.",
+      };
+    }
+
+    const parsed = await readOpenAIResponse(response);
+    payload = parsed.payload;
+    rawText = parsed.rawText;
+
+    if (response.ok || !isRetryableOpenAIStatus(response.status) || attempt === OPENAI_MAX_ATTEMPTS) {
+      break;
+    }
+
+    const requestId = response.headers.get("x-request-id") || undefined;
+    const upstream = getOpenAIErrorFields(payload, rawText);
+    console.warn("[image-proxy] retrying openai image edit:", {
+      model: OPENAI_MODEL,
       status: response.status,
+      attempt,
+      maxAttempts: OPENAI_MAX_ATTEMPTS,
+      openaiRequestId: requestId,
+      clientRequestId,
+      errorType: upstream.type,
+      errorCode: upstream.code,
+      errorParam: upstream.param,
+      errorMessage: upstream.message,
+    });
+
+    await sleep(OPENAI_RETRY_BASE_DELAY_MS * attempt);
+  }
+
+  if (!response) {
+    throw {
+      status: 502,
       provider: "openai",
-      code: isModeration ? "moderation" : errorCodeForStatus(response.status),
-      message: isModeration
-        ? upstreamMessage || "OpenAI blocked this request under image safety policy."
-        : messageForOpenAIError(response.status, upstreamMessage),
+      code: "upstream",
+      message: "OpenAI image generation request failed before a response was received.",
     };
   }
 
-  const payload = responseJson as OpenAIImagesResponse;
+  if (!response.ok) {
+    const requestId = response.headers.get("x-request-id") || undefined;
+    const upstream = getOpenAIErrorFields(payload, rawText);
+    const isModeration =
+      [upstream.code, upstream.type, upstream.message]
+        .filter(Boolean)
+        .some((value) => value!.includes("moderation") || value!.includes("content"));
+
+    console.error("[image-proxy] openai image edit failed:", {
+      model: OPENAI_MODEL,
+      status: response.status,
+      openaiRequestId: requestId,
+      clientRequestId,
+      errorType: upstream.type,
+      errorCode: upstream.code,
+      errorParam: upstream.param,
+      errorMessage: upstream.message,
+      size: request.aspect,
+      quality: request.quality,
+      outputFormat: "png",
+      mimeType: request.mimeType,
+      imageBytes: imageBytes.byteLength,
+    });
+
+    throw {
+      status: response.status >= 500 ? 502 : response.status,
+      provider: "openai",
+      code: isModeration ? "moderation" : errorCodeForStatus(response.status),
+      message: isModeration
+        ? upstream.message || "OpenAI blocked this request under image safety policy."
+        : messageForOpenAIError(response.status, upstream.message),
+    };
+  }
+
   const imageBase64 = payload.data?.[0]?.b64_json;
   if (!imageBase64) {
     throw {
       status: 502,
       provider: "openai",
-      code: "no_image",
+      code: "upstream",
       message: "OpenAI did not return an image.",
     };
   }
