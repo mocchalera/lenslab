@@ -5,7 +5,7 @@
 ![Vite](https://img.shields.io/badge/Vite-6.x-646cff.svg)
 ![Vercel](https://img.shields.io/badge/Vercel-ready-black.svg)
 
-A professional optical simulation app that transforms portraits through camera/lens/lighting/scene/wardrobe controls using OpenAI gpt-image-2 or Gemini nano-banana.
+A professional optical simulation app that transforms portraits through camera/lens/lighting/scene/wardrobe controls using OpenAI gpt-image-2 or Gemini nano-banana 2 (`gemini-3.1-flash-image-preview`).
 
 > This project was originally scaffolded in Google AI Studio and now runs on a Vercel-proxied server architecture.
 
@@ -13,7 +13,7 @@ A professional optical simulation app that transforms portraits through camera/l
 
 ## Features
 
-- Dual provider: OpenAI gpt-image-2 + Gemini nano-banana switchable
+- Dual provider: OpenAI gpt-image-2 + Gemini nano-banana 2 (`gemini-3.1-flash-image-preview`) switchable
 - Mount-accurate lens compatibility per camera body (Leica M / Sony E / Nikon Z / Canon RF / Pentax K / Fuji G / Hasselblad X / Phase One)
 - 10+ camera bodies including medium format (Hasselblad X2D, Phase One IQ4, Fujifilm GFX100 II)
 - 20+ legendary prime lenses (Noctilux, Summilux, Noct 58/0.95, Otus, Pentax Limited, etc.)
@@ -79,10 +79,12 @@ npm run dev
 | Variable | Required | Description |
 | --- | --- | --- |
 | `OPENAI_API_KEY` | Required for OpenAI | Server-side OpenAI API key used by `/api/image`. |
-| `GEMINI_API_KEY` | Required for Gemini | Server-side Gemini API key used by `/api/image`. |
+| `GEMINI_API_KEY` | Required for Gemini | Server-side Gemini API key used by `/api/image` with Nano Banana 2 (`gemini-3.1-flash-image-preview`). |
 | `NOMINATIM_CONTACT_EMAIL` | Required for map search | Real contact email included in the Nominatim User-Agent for `/api/geocode`. |
 
 Do not expose provider keys as `VITE_*` variables. Browser code calls only local API routes.
+
+Nano Banana 2 is currently the Gemini 3.1 Flash Image Preview model. It may require paid/preview access and has preview-model rate limits. Google documents Gemini 3 Pro Image separately as Nano Banana Pro (`gemini-3-pro-image-preview`).
 
 ## Architecture
 
@@ -91,7 +93,7 @@ Browser (React UI)
   -> POST /api/image
       -> Vercel Function
           -> OpenAI Images API (gpt-image-2)
-          -> Gemini image API (nano-banana)
+          -> Gemini image API (nano-banana 2 / gemini-3.1-flash-image-preview)
 
 Browser (map picker)
   -> GET /api/geocode?q=...
@@ -128,7 +130,7 @@ API costs are your responsibility. No hosted demo is provided.
 - Vite + React 19 + TypeScript
 - Vercel Functions for server-side provider proxies
 - OpenAI Images API (`gpt-image-2`)
-- Google Gemini image generation
+- Google Gemini image generation (`gemini-3.1-flash-image-preview`)
 - Leaflet + React Leaflet + OpenStreetMap
 - Playwright for screenshot capture
 

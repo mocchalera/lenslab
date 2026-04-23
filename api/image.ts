@@ -58,7 +58,7 @@ interface OpenAIImagesResponse {
 }
 
 const OPENAI_MODEL = "gpt-image-2";
-const GEMINI_MODEL = "gemini-2.5-flash-image";
+const GEMINI_MODEL = "gemini-3.1-flash-image-preview";
 const IMAGE_ASPECT_VALUES = ["auto", "1024x1024", "1536x1024", "1024x1536"] as const;
 const IMAGE_QUALITY_VALUES = ["auto", "low", "medium", "high"] as const;
 let didLogGeminiAspectQualityWarning = false;
