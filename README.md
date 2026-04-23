@@ -41,7 +41,7 @@ npm run screenshots
 
 ## One-Click Deploy
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/mocchalera/lenslab&env=OPENAI_API_KEY,GEMINI_API_KEY)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/mocchalera/lenslab&env=OPENAI_API_KEY,GEMINI_API_KEY,NOMINATIM_CONTACT_EMAIL)
 
 ## Quick Start
 
@@ -52,13 +52,15 @@ npm install
 cp .env.example .env.local
 ```
 
-Add your provider keys to `.env.local`:
+Add your provider keys and geocoding contact email to `.env.local`:
 
 ```env
 OPENAI_API_KEY=
 GEMINI_API_KEY=
 NOMINATIM_CONTACT_EMAIL=
 ```
+
+`NOMINATIM_CONTACT_EMAIL` is required for map search. Set it to a real contact email in Vercel Project Settings; placeholder addresses such as `contact@example.com` are rejected before LensLab calls Nominatim.
 
 Run locally with the Vercel runtime so `/api/*` functions are available:
 
@@ -78,7 +80,7 @@ npm run dev
 | --- | --- | --- |
 | `OPENAI_API_KEY` | Required for OpenAI | Server-side OpenAI API key used by `/api/image`. |
 | `GEMINI_API_KEY` | Required for Gemini | Server-side Gemini API key used by `/api/image`. |
-| `NOMINATIM_CONTACT_EMAIL` | Optional | Contact email included in the Nominatim User-Agent for `/api/geocode`. |
+| `NOMINATIM_CONTACT_EMAIL` | Required for map search | Real contact email included in the Nominatim User-Agent for `/api/geocode`. |
 
 Do not expose provider keys as `VITE_*` variables. Browser code calls only local API routes.
 
@@ -119,7 +121,7 @@ API costs are your responsibility. No hosted demo is provided.
 - Keep API keys server-side in Vercel environment variables.
 - Large uploads are sent to `/api/image`; Vercel request size and function duration limits may apply.
 - OpenAI and Gemini can interpret the same optical prompt differently.
-- The map picker uses OpenStreetMap/Nominatim through `/api/geocode`; respect Nominatim usage limits.
+- The map picker uses OpenStreetMap/Nominatim through `/api/geocode`; set a real `NOMINATIM_CONTACT_EMAIL` and respect Nominatim usage limits.
 
 ## Tech Stack
 

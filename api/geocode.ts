@@ -10,11 +10,17 @@ interface CacheEntry {
   results: GeocodeResult[];
 }
 
-type GeocodeErrorCode = "bad_request" | "method_not_allowed" | "rate_limited" | "upstream" | "unknown";
+type GeocodeErrorCode =
+  | "bad_request"
+  | "method_not_allowed"
+  | "missing_contact_email"
+  | "rate_limited"
+  | "upstream"
+  | "unknown";
 
 const NOMINATIM_ENDPOINT = "https://nominatim.openstreetmap.org/search";
-const NOMINATIM_CONTACT_EMAIL = process.env.NOMINATIM_CONTACT_EMAIL || "contact@example.com";
-const USER_AGENT = `LensLab/1.0 (${NOMINATIM_CONTACT_EMAIL})`;
+const DEFAULT_CONTACT_EMAIL = "contact@example.com";
+const NOMINATIM_CONTACT_EMAIL = (process.env.NOMINATIM_CONTACT_EMAIL || "").trim();
 const CACHE_TTL_MS = 60 * 60 * 1000;
 const CACHE_MAX_ITEMS = 100;
 
@@ -41,6 +47,18 @@ const readQuery = (req: any): string => {
   const rawQuery = url.searchParams.get("q") || "";
   return rawQuery.trim();
 };
+
+const hasRealContactEmail = () => {
+  const normalized = NOMINATIM_CONTACT_EMAIL.toLowerCase();
+  return (
+    Boolean(normalized) &&
+    normalized !== DEFAULT_CONTACT_EMAIL &&
+    !normalized.includes("example.com") &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)
+  );
+};
+
+const getUserAgent = () => `LensLab/1.0 (${NOMINATIM_CONTACT_EMAIL})`;
 
 const getCachedResults = (key: string): GeocodeResult[] | undefined => {
   const entry = cache.get(key);
@@ -94,7 +112,7 @@ const searchNominatim = async (query: string): Promise<GeocodeResult[]> => {
 
   const response = await fetch(url, {
     headers: {
-      "User-Agent": USER_AGENT,
+      "User-Agent": getUserAgent(),
       "Accept-Language": "ja,en;q=0.8",
     },
   });
@@ -134,6 +152,16 @@ export default async function handler(req: any, res: any) {
     const query = readQuery(req);
     if (!query) {
       sendError(res, 400, "bad_request", "q query parameter is required.");
+      return;
+    }
+
+    if (!hasRealContactEmail()) {
+      sendError(
+        res,
+        503,
+        "missing_contact_email",
+        "Geocoding requires NOMINATIM_CONTACT_EMAIL to be set to a real email in Vercel environment variables."
+      );
       return;
     }
 

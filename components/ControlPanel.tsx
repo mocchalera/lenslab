@@ -484,6 +484,13 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ params, setParams, provider
         <LocationPickerModal
           initialLocation={params.customLocation}
           onClose={() => setIsLocationPickerOpen(false)}
+          onClear={() => {
+            setParams(prev => ({
+              ...prev,
+              customLocation: undefined
+            }));
+            setIsLocationPickerOpen(false);
+          }}
           onConfirm={handleConfirmLocation}
         />
       )}
