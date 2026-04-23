@@ -288,7 +288,7 @@ function AppContent() {
                 className="bg-zinc-800 text-zinc-200 text-xs rounded border border-zinc-700 focus:ring-blue-500 focus:border-blue-500 px-2 py-1.5 normal-case tracking-normal"
               >
                 <option value="openai">OpenAI (gpt-image-2)</option>
-                <option value="gemini">Gemini (nano-banana)</option>
+                <option value="gemini">Gemini (nano-banana 2)</option>
               </select>
             </label>
 
