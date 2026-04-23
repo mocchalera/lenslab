@@ -38,9 +38,12 @@ Create `.env.local` for local development, or configure the same variables in Ve
 ```env
 OPENAI_API_KEY=
 GEMINI_API_KEY=
+NOMINATIM_CONTACT_EMAIL=
 ```
 
 Do not expose these as `VITE_*` variables and do not inject them in `vite.config.ts`. The browser should only call `/api/image`.
+
+`NOMINATIM_CONTACT_EMAIL` is required for map search. Set it to a real contact email in Vercel Project Settings; placeholder addresses such as `contact@example.com` are rejected before LensLab calls Nominatim.
 
 ## Run Locally
 
@@ -79,7 +82,7 @@ The UI does not expose model or quality controls in this phase. OpenAI uses `out
 ## Deploy on Vercel
 
 1. Import the repository into Vercel.
-2. Set `OPENAI_API_KEY` and `GEMINI_API_KEY` in Project Settings -> Environment Variables.
+2. Set `OPENAI_API_KEY`, `GEMINI_API_KEY`, and `NOMINATIM_CONTACT_EMAIL` in Project Settings -> Environment Variables.
 3. Deploy with the default Vite build command:
 
 ```bash
