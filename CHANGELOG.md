@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Upgrade Gemini provider from Gemini 2.5 Flash Image (nano-banana) to `gemini-3.1-flash-image-preview` (nano-banana 2).
 
+### Fixed
+
+- Harden OpenAI image edit requests against upstream 5xx failures with retry, request-id logging, input MIME validation, and clearer upstream error handling.
+
 ## [0.1.0] - 2026-04-23
 
 ### Added
