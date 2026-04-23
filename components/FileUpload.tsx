@@ -1,10 +1,13 @@
 import React, { useCallback } from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
+  const { t } = useLanguage();
+
   const handleDrop = useCallback(
     (e: React.DragEvent<HTMLLabelElement>) => {
       e.preventDefault();
@@ -51,10 +54,10 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
           />
         </svg>
         <p className="mb-2 text-sm font-medium">
-          <span className="font-bold">クリックしてアップロード</span>、またはドラッグ&ドロップ
+          <span className="font-bold">{t('uploadClick')}</span>{t('uploadDrop')}
         </p>
         <p className="text-xs text-zinc-500">
-          HEIC / JPG / PNG（最大10MB）
+          {t('uploadFormats')}
         </p>
       </div>
       <input
@@ -63,7 +66,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
         className="hidden"
         accept="image/*"
         onChange={handleChange}
-        aria-label="元画像を選択"
+        aria-label={t('uploadAria')}
       />
     </label>
   );
