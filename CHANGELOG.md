@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `robots.txt`, `noindex` meta, and `X-Robots-Tag` header to opt out of search engine indexing.
+
 ### Changed
 
 ### Fixed

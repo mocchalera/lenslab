@@ -44,6 +44,8 @@ npm run screenshots
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/mocchalera/lenslab&env=OPENAI_API_KEY,GEMINI_API_KEY,NOMINATIM_CONTACT_EMAIL)
 
+Preview/Production deployments are configured to block search engine indexing (`robots` meta + `robots.txt` + `X-Robots-Tag` header). Remove these if you want public discoverability.
+
 ## Quick Start
 
 ```bash

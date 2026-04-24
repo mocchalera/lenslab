@@ -44,6 +44,8 @@ npm run screenshots
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/mocchalera/lenslab&env=OPENAI_API_KEY,GEMINI_API_KEY,NOMINATIM_CONTACT_EMAIL)
 
+Preview / Production デプロイは検索エンジンのインデックスを防ぐ設定です（`robots` メタ + `robots.txt` + `X-Robots-Tag` ヘッダー）。公開サイトとして検索流入を許可したい場合は、この設定を外してください。
+
 ## クイックスタート
 
 ```bash
